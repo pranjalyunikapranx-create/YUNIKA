@@ -1,0 +1,222 @@
+:root {
+  --bg: #E8E8E6;          /* main app background (light grey) */
+  --white: #FFFFFF;
+  --surface: #FFFFFF;
+  --field: #F4F4F2;       /* input boxes */
+  --purple: #C173F5;      /* buttons */
+  --purple-soft: #EBD3FB;
+  --ink: #1F1233;         /* dark text */
+  --ink-soft: #6B6578;    /* softer text */
+  --error: #B3261E;
+  --radius: 22px;
+}
+
+* { box-sizing: border-box; margin: 0; padding: 0; -webkit-tap-highlight-color: transparent; }
+
+html, body {
+  height: 100%;
+  background: var(--white);
+  color: var(--ink);
+  font-family: "Noto Sans Devanagari", "Segoe UI", system-ui, -apple-system, Roboto, sans-serif;
+  font-size: 16px;
+  line-height: 1.55;
+}
+
+.hidden { display: none !important; }
+
+/* ---------- 1. Splash (white, logo plays for 3 seconds) ---------- */
+.splash {
+  position: fixed; inset: 0; z-index: 30;
+  background: var(--white);
+  display: flex; flex-direction: column;
+  align-items: center; justify-content: center;
+  transition: opacity .4s ease, visibility .4s ease;
+}
+.splash.out { opacity: 0; visibility: hidden; pointer-events: none; }
+
+.logo-anim { display: block; overflow: visible; }
+
+.l-tile {
+  transform-box: fill-box; transform-origin: center;
+  animation: tileIn .6s cubic-bezier(.2, 1.2, .3, 1) both;
+}
+.l-ring {
+  stroke-dasharray: 943;
+  animation: ringDraw 1.1s cubic-bezier(.4, 0, .2, 1) .5s both;
+}
+.l-y { stroke-dasharray: 100; }
+.l-y1 { animation: drawY .7s ease-out 1.1s both; }
+.l-y2 { animation: drawY .45s ease-out 1.65s both; }
+.l-orbit {
+  transform-origin: 256px 256px;
+  animation: orbitIn 1s cubic-bezier(.2, .7, .2, 1) 1.9s both;
+}
+
+.splash-title {
+  display: flex; justify-content: center;
+  margin-top: 30px;
+  font-size: 26px; font-weight: 700;
+  letter-spacing: .14em;
+  color: var(--ink);
+}
+.splash-title span {
+  display: inline-block;
+  opacity: 0; transform: translateY(10px);
+  animation: letterIn .5s cubic-bezier(.2, .8, .2, 1) forwards;
+  animation-delay: calc(1.8s + var(--i, 0) * 60ms);
+}
+.splash-title .gap { width: .55em; }
+
+@keyframes tileIn { from { transform: scale(.6); opacity: 0; } to { transform: none; opacity: 1; } }
+@keyframes ringDraw { from { stroke-dashoffset: 943; opacity: 0; } 2% { opacity: 1; } to { stroke-dashoffset: 0; opacity: 1; } }
+@keyframes drawY { from { stroke-dashoffset: 100; opacity: 0; } 1% { opacity: 1; } to { stroke-dashoffset: 0; opacity: 1; } }
+@keyframes orbitIn { from { transform: rotate(-360deg); opacity: 0; } 15% { opacity: 1; } to { transform: none; opacity: 1; } }
+@keyframes letterIn { to { opacity: 1; transform: none; } }
+
+/* ---------- 2. Sign up / Log in ---------- */
+.auth {
+  position: fixed; inset: 0; z-index: 20;
+  background: var(--white);
+  overflow-y: auto;
+  padding: 28px 20px;
+  padding-top: max(28px, env(safe-area-inset-top));
+  padding-bottom: max(28px, env(safe-area-inset-bottom));
+  animation: fadeUp .45s ease both;
+}
+.auth-card { max-width: 420px; margin: 0 auto; text-align: center; }
+.auth-logo { display: block; width: 76px; height: 76px; margin: 8px auto 18px; }
+.auth-title { font-size: 24px; font-weight: 700; line-height: 1.25; overflow-wrap: anywhere; }
+.auth-sub { margin-top: 6px; color: var(--ink-soft); }
+
+.seg {
+  display: flex; gap: 4px;
+  margin: 24px 0 20px;
+  padding: 4px;
+  background: var(--field);
+  border-radius: 999px;
+}
+.seg-btn {
+  flex: 1; border: none; cursor: pointer;
+  font: inherit; font-weight: 600;
+  padding: 10px 12px; border-radius: 999px;
+  background: transparent; color: var(--ink-soft);
+}
+.seg-btn.active { background: var(--purple); color: var(--ink); }
+
+.form { display: flex; flex-direction: column; gap: 14px; text-align: left; }
+.field { display: flex; flex-direction: column; gap: 6px; }
+.field > span { font-size: 14px; font-weight: 600; }
+.field small { font-weight: 400; color: var(--ink-soft); }
+.field input {
+  width: 100%; height: 50px;
+  border: 1.5px solid transparent; outline: none;
+  border-radius: 14px;
+  background: var(--field); color: var(--ink);
+  font: inherit; padding: 0 16px;
+}
+.field input:focus { border-color: var(--purple); background: var(--white); }
+.pw { position: relative; }
+.pw input { padding-right: 70px; }
+.pw-toggle {
+  position: absolute; right: 6px; top: 6px; height: 38px;
+  border: none; background: transparent; cursor: pointer;
+  font: inherit; font-size: 14px; font-weight: 600; color: var(--ink-soft);
+  padding: 0 12px; border-radius: 10px;
+}
+
+.err { min-height: 1.4em; font-size: 14px; color: var(--error); }
+.primary {
+  width: 100%; height: 52px; border: none; cursor: pointer;
+  border-radius: 999px;
+  background: var(--purple); color: var(--ink);
+  font: inherit; font-weight: 700; font-size: 16px;
+}
+.primary:active { transform: scale(.98); }
+.primary:disabled { opacity: .6; cursor: default; }
+.linklike {
+  border: none; background: transparent; cursor: pointer;
+  font: inherit; font-size: 14px; color: var(--ink-soft);
+  text-decoration: underline; padding: 6px; align-self: center;
+}
+.note { margin-top: 22px; font-size: 13px; color: var(--ink-soft); }
+
+@keyframes fadeUp { from { opacity: 0; transform: translateY(8px); } to { opacity: 1; transform: none; } }
+
+/* ---------- 3. Main app ---------- */
+.app {
+  position: fixed; inset: 0;
+  background: var(--bg);
+  display: flex; flex-direction: column;
+  max-width: 720px;
+  margin: 0 auto;
+}
+@media (min-width: 721px) { .app { box-shadow: 0 0 0 100vmax var(--bg); } }
+
+.topbar {
+  display: flex; align-items: center; justify-content: space-between;
+  padding: 16px 20px 8px;
+  padding-top: max(16px, env(safe-area-inset-top));
+}
+.brand { display: flex; align-items: center; gap: 10px; }
+.brand-mark { display: block; width: 36px; height: 36px; }
+.brand-name { font-weight: 600; letter-spacing: .12em; font-size: 15px; }
+.icon-btn {
+  width: 40px; height: 40px; border: none; border-radius: 50%;
+  background: var(--surface); color: var(--ink);
+  display: flex; align-items: center; justify-content: center;
+  cursor: pointer;
+}
+.icon-btn:active { transform: scale(.94); }
+
+.chat {
+  flex: 1; overflow-y: auto;
+  padding: 12px 20px;
+  display: flex; flex-direction: column; gap: 12px;
+}
+.empty { margin: auto; text-align: center; padding: 0 12px; }
+.empty-mark { display: block; width: 84px; height: 84px; margin: 0 auto 16px; }
+.empty-title {
+  font-size: 22px; font-weight: 600; margin-bottom: 4px;
+  overflow-wrap: anywhere;
+}
+.empty-sub { color: var(--ink-soft); }
+
+.msg {
+  max-width: 82%;
+  padding: 11px 15px;
+  border-radius: var(--radius);
+  overflow-wrap: anywhere;
+  animation: rise .25s ease;
+}
+.msg.user { align-self: flex-end; background: var(--purple); color: var(--ink); border-bottom-right-radius: 8px; }
+.msg.ai { align-self: flex-start; background: var(--surface); border-bottom-left-radius: 8px; }
+@keyframes rise { from { opacity: 0; transform: translateY(6px); } to { opacity: 1; transform: none; } }
+
+.composer {
+  display: flex; gap: 10px;
+  padding: 10px 16px;
+  padding-bottom: max(14px, env(safe-area-inset-bottom));
+}
+.composer input {
+  flex: 1; min-width: 0;
+  border: none; outline: none;
+  background: var(--surface); color: var(--ink);
+  font: inherit; padding: 14px 18px; border-radius: 999px;
+}
+.composer input::placeholder { color: var(--ink-soft); }
+.composer input:focus { box-shadow: 0 0 0 2px var(--purple-soft); }
+.send {
+  width: 50px; height: 50px; flex: none;
+  border: none; border-radius: 50%;
+  background: var(--purple); color: var(--ink);
+  display: flex; align-items: center; justify-content: center;
+  cursor: pointer; transition: transform .15s ease;
+}
+.send:active { transform: scale(.94); }
+
+/* Reduced motion: show the finished logo straight away */
+@media (prefers-reduced-motion: reduce) {
+  *, *::before, *::after { animation: none !important; transition: none !important; }
+  .l-ring, .l-y { stroke-dashoffset: 0 !important; }
+  .splash-title span { opacity: 1 !important; transform: none !important; }
+  }
