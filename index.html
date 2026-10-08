@@ -1,0 +1,124 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+  <meta name="theme-color" content="#FFFFFF">
+  <meta name="mobile-web-app-capable" content="yes">
+  <title>YUNIKA AI</title>
+  <link rel="manifest" href="manifest.json">
+  <link rel="icon" href="icon-192.png">
+  <link rel="apple-touch-icon" href="icon-192.png">
+  <link rel="stylesheet" href="style.css">
+</head>
+<body>
+
+  <!-- 1. Splash: white screen, logo animation for 3 seconds -->
+  <div id="splash" class="splash" role="status" aria-label="YUNIKA AI">
+    <svg class="logo-anim" viewBox="0 0 512 512" width="168" height="168" aria-hidden="true">
+      <rect class="l-tile" width="512" height="512" rx="120" fill="#F4EEFB"/>
+      <circle class="l-ring" cx="256" cy="256" r="150" fill="none" stroke="#C173F5" stroke-width="30" transform="rotate(-90 256 256)"/>
+      <path class="l-y l-y1" d="M196 200 L256 275 L256 345" pathLength="100" fill="none" stroke="#2A1540" stroke-width="36" stroke-linecap="round" stroke-linejoin="round"/>
+      <path class="l-y l-y2" d="M316 200 L256 275" pathLength="100" fill="none" stroke="#2A1540" stroke-width="36" stroke-linecap="round" stroke-linejoin="round"/>
+      <g class="l-orbit"><circle cx="352" cy="141" r="30" fill="#2A1540" stroke="#F4EEFB" stroke-width="12"/></g>
+    </svg>
+    <h1 class="splash-title" aria-hidden="true">
+      <span style="--i:0">Y</span><span style="--i:1">U</span><span style="--i:2">N</span><span style="--i:3">I</span><span style="--i:4">K</span><span style="--i:5">A</span><span class="gap"></span><span style="--i:7">A</span><span style="--i:8">I</span>
+    </h1>
+  </div>
+
+  <!-- 2. Sign up / Log in (only for people who are not signed in) -->
+  <section id="auth" class="auth hidden" aria-label="Sign up or log in">
+    <div class="auth-card">
+      <img class="auth-logo" src="logo.svg" alt="YUNIKA AI">
+      <h2 id="authTitle" class="auth-title">Create your account</h2>
+      <p id="authSub" class="auth-sub">Sign up once to start using YUNIKA AI.</p>
+
+      <div class="seg" role="tablist" aria-label="Sign up or log in">
+        <button type="button" id="tabSignup" class="seg-btn active" role="tab" aria-selected="true">Sign up</button>
+        <button type="button" id="tabLogin" class="seg-btn" role="tab" aria-selected="false">Log in</button>
+      </div>
+
+      <form id="signupForm" class="form" novalidate>
+        <label class="field">
+          <span>Name</span>
+          <input id="suName" type="text" autocomplete="name" maxlength="40" enterkeyhint="next">
+        </label>
+        <label class="field">
+          <span>Email</span>
+          <input id="suEmail" type="email" inputmode="email" autocomplete="email" autocapitalize="none" spellcheck="false" enterkeyhint="next">
+        </label>
+        <label class="field">
+          <span>Password <small>(at least 8 characters)</small></span>
+          <div class="pw">
+            <input id="suPass" type="password" autocomplete="new-password" enterkeyhint="next">
+            <button type="button" class="pw-toggle" data-target="suPass">Show</button>
+          </div>
+        </label>
+        <label class="field">
+          <span>Confirm password</span>
+          <div class="pw">
+            <input id="suPass2" type="password" autocomplete="new-password" enterkeyhint="done">
+            <button type="button" class="pw-toggle" data-target="suPass2">Show</button>
+          </div>
+        </label>
+        <p id="suError" class="err" role="alert"></p>
+        <button type="submit" id="suBtn" class="primary">Create account</button>
+      </form>
+
+      <form id="loginForm" class="form hidden" novalidate>
+        <label class="field">
+          <span>Email</span>
+          <input id="liEmail" type="email" inputmode="email" autocomplete="username" autocapitalize="none" spellcheck="false" enterkeyhint="next">
+        </label>
+        <label class="field">
+          <span>Password</span>
+          <div class="pw">
+            <input id="liPass" type="password" autocomplete="current-password" enterkeyhint="done">
+            <button type="button" class="pw-toggle" data-target="liPass">Show</button>
+          </div>
+        </label>
+        <p id="liError" class="err" role="alert"></p>
+        <button type="submit" id="liBtn" class="primary">Log in</button>
+        <button type="button" id="resetBtn" class="linklike">Forgot password? Reset this device</button>
+      </form>
+
+      <p class="note">Your account is stored only on this device. Nothing is sent to any server.</p>
+    </div>
+  </section>
+
+  <!-- 3. Main app -->
+  <main id="app" class="app hidden">
+    <header class="topbar">
+      <div class="brand">
+        <img class="brand-mark" src="logo.svg" alt="">
+        <span class="brand-name">YUNIKA AI</span>
+      </div>
+      <button type="button" id="logoutBtn" class="icon-btn" aria-label="Log out" title="Log out">
+        <svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+          <path d="M9 4H6a2 2 0 0 0-2 2v12a2 2 0 0 0 2 2h3"/><path d="M16 8l4 4-4 4M20 12H9"/>
+        </svg>
+      </button>
+    </header>
+
+    <section id="chat" class="chat" aria-live="polite">
+      <div id="empty" class="empty">
+        <img class="empty-mark" src="logo.svg" alt="">
+        <p id="greeting" class="empty-title">Hello!</p>
+        <p class="empty-sub">I'm YUNIKA AI. What would you like to do today?</p>
+      </div>
+    </section>
+
+    <form id="composer" class="composer" autocomplete="off">
+      <input id="input" type="text" placeholder="Type a message…" aria-label="Type a message" enterkeyhint="send">
+      <button type="submit" class="send" aria-label="Send">
+        <svg viewBox="0 0 24 24" width="22" height="22" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+          <path d="M5 12h14M13 6l6 6-6 6"/>
+        </svg>
+      </button>
+    </form>
+  </main>
+
+  <script src="app.js"></script>
+</body>
+    </html>
