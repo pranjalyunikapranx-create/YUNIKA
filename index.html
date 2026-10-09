@@ -34,7 +34,7 @@
       <h2 id="authTitle" class="auth-title">Create your account</h2>
       <p id="authSub" class="auth-sub">Sign up once to start using YUNIKA AI.</p>
 
-      <div class="seg" role="tablist" aria-label="Sign up or log in">
+      <div id="seg" class="seg" role="tablist" aria-label="Sign up or log in">
         <button type="button" id="tabSignup" class="seg-btn active" role="tab" aria-selected="true">Sign up</button>
         <button type="button" id="tabLogin" class="seg-btn" role="tab" aria-selected="false">Log in</button>
       </div>
@@ -80,10 +80,57 @@
         </label>
         <p id="liError" class="err" role="alert"></p>
         <button type="submit" id="liBtn" class="primary">Log in</button>
-        <button type="button" id="resetBtn" class="linklike">Forgot password? Reset this device</button>
+        <button type="button" id="forgotBtn" class="linklike">Forgot password?</button>
+        <button type="button" id="resetBtn" class="linklike">Erase this device and start over</button>
+      </form>
+
+      <form id="resetForm" class="form hidden" novalidate>
+        <label class="field">
+          <span>Email</span>
+          <input id="rsEmail" type="email" inputmode="email" autocomplete="username" autocapitalize="none" spellcheck="false" enterkeyhint="next">
+        </label>
+        <label class="field">
+          <span>Recovery code</span>
+          <input id="rsCode" type="text" autocomplete="off" autocapitalize="characters" spellcheck="false" placeholder="XXXX-XXXX-XXXX-XXXX" enterkeyhint="next">
+        </label>
+        <label class="field">
+          <span>New password <small>(at least 8 characters)</small></span>
+          <div class="pw">
+            <input id="rsPass" type="password" autocomplete="new-password" enterkeyhint="next">
+            <button type="button" class="pw-toggle" data-target="rsPass">Show</button>
+          </div>
+        </label>
+        <label class="field">
+          <span>Confirm new password</span>
+          <div class="pw">
+            <input id="rsPass2" type="password" autocomplete="new-password" enterkeyhint="done">
+            <button type="button" class="pw-toggle" data-target="rsPass2">Show</button>
+          </div>
+        </label>
+        <p id="rsError" class="err" role="alert"></p>
+        <button type="submit" id="rsBtn" class="primary">Reset password</button>
+        <button type="button" id="rsBack" class="linklike">Back to log in</button>
       </form>
 
       <p class="note">Your account is stored only on this device. Nothing is sent to any server.</p>
+    </div>
+  </section>
+
+  <!-- 2b. Recovery code (shown once, right after sign up) -->
+  <section id="recovery" class="auth hidden" aria-label="Save your recovery code">
+    <div class="auth-card">
+      <img class="auth-logo" src="logo.svg" alt="YUNIKA AI">
+      <h2 class="auth-title">Save your recovery code</h2>
+      <p class="auth-sub">If you forget your password, this code is the only way back into your account. It is shown only once.</p>
+      <p id="rcCode" class="rc-code" aria-live="polite"></p>
+      <button type="button" id="rcCopy" class="soft">Copy code</button>
+      <p class="rc-tip">Write it on paper or save it in a safe place. Don't share it with anyone.</p>
+      <label class="check">
+        <input type="checkbox" id="rcCheck">
+        <span>I have saved my recovery code</span>
+      </label>
+      <p id="rcMsg" class="err" role="alert"></p>
+      <button type="button" id="rcDone" class="primary" disabled>Continue</button>
     </div>
   </section>
 
@@ -121,4 +168,4 @@
 
   <script src="app.js"></script>
 </body>
-    </html>
+  </html>
