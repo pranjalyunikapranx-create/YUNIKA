@@ -9,7 +9,201 @@
   <link rel="manifest" href="manifest.json">
   <link rel="icon" href="icon-192.png">
   <link rel="apple-touch-icon" href="icon-192.png">
-  <link rel="stylesheet" href="style.css">
+  <style>
+:root {
+  --bg: #E8E8E6;          /* main app background (light grey) */
+  --white: #FFFFFF;
+  --surface: #FFFFFF;
+  --field: #F4F4F2;       /* input boxes */
+  --purple: #C173F5;      /* buttons */
+  --purple-soft: #EBD3FB;
+  --ink: #1F1233;         /* dark text */
+  --ink-soft: #6B6578;    /* softer text */
+  --error: #B3261E;
+  --radius: 22px;
+}
+
+* { box-sizing: border-box; margin: 0; padding: 0; -webkit-tap-highlight-color: transparent; }
+
+html, body {
+  height: 100%;
+  background: var(--white);
+  color: var(--ink);
+  font-family: "Noto Sans Devanagari", "Segoe UI", system-ui, -apple-system, Roboto, sans-serif;
+  font-size: 16px;
+  line-height: 1.55;
+}
+
+.hidden { display: none !important; }
+
+/* ---------- 1. Splash (white, logo plays for 3 seconds) ---------- */
+.splash {
+  position: fixed; inset: 0; z-index: 30;
+  background: var(--white);
+  display: flex; flex-direction: column;
+  align-items: center; justify-content: center;
+  transition: opacity .4s ease, visibility .4s ease;
+}
+.splash.out { opacity: 0; visibility: hidden; pointer-events: none; }
+
+.logo-anim { display: block; overflow: visible; }
+
+.l-tile {
+  transform-box: fill-box; transform-origin: center;
+  animation: tileIn .6s cubic-bezier(.2, 1.2, .3, 1) both;
+}
+.l-ring {
+  stroke-dasharray: 943;
+  animation: ringDraw 1.1s cubic-bezier(.4, 0, .2, 1) .5s both;
+}
+.l-y { stroke-dasharray: 100; }
+.l-y1 { animation: drawY .7s ease-out 1.1s both; }
+.l-y2 { animation: drawY .45s ease-out 1.65s both; }
+.l-orbit {
+  transform-origin: 256px 256px;
+  animation: orbitIn 1s cubic-bezier(.2, .7, .2, 1) 1.9s both;
+}
+
+.splash-title {
+  display: flex; justify-content: center;
+  margin-top: 30px;
+  font-size: 26px; font-weight: 700;
+  letter-spacing: .14em;
+  color: var(--ink);
+}
+.splash-title span {
+  display: inline-block;
+  opacity: 0; transform: translateY(10px);
+  animation: letterIn .5s cubic-bezier(.2, .8, .2, 1) forwards;
+  animation-delay: calc(1.8s + var(--i, 0) * 60ms);
+}
+.splash-title .gap { width: .55em; }
+
+@keyframes tileIn { from { transform: scale(.6); opacity: 0; } to { transform: none; opacity: 1; } }
+@keyframes ringDraw { from { stroke-dashoffset: 943; opacity: 0; } 2% { opacity: 1; } to { stroke-dashoffset: 0; opacity: 1; } }
+@keyframes drawY { from { stroke-dashoffset: 100; opacity: 0; } 1% { opacity: 1; } to { stroke-dashoffset: 0; opacity: 1; } }
+@keyframes orbitIn { from { transform: rotate(-360deg); opacity: 0; } 15% { opacity: 1; } to { transform: none; opacity: 1; } }
+@keyframes letterIn { to { opacity: 1; transform: none; } }
+
+/* ---------- 2. Sign up / Log in ---------- */
+.auth {
+  position: fixed; inset: 0; z-index: 20;
+  background: var(--white);
+  overflow-y: auto;
+  padding: 28px 20px;
+  padding-top: max(28px, env(safe-area-inset-top));
+  padding-bottom: max(28px, env(safe-area-inset-bottom));
+  animation: fadeUp .45s ease both;
+}
+.auth-card { max-width: 420px; margin: 0 auto; text-align: center; }
+.auth-logo { display: block; width: 76px; height: 76px; margin: 8px auto 18px; }
+.auth-title { font-size: 24px; font-weight: 700; line-height: 1.25; overflow-wrap: anywhere; }
+.auth-sub { margin-top: 6px; color: var(--ink-soft); }
+
+.form { display: flex; flex-direction: column; gap: 14px; text-align: left; }
+.field { display: flex; flex-direction: column; gap: 6px; }
+.field > span { font-size: 14px; font-weight: 600; }
+.field input {
+  width: 100%; height: 50px;
+  border: 1.5px solid transparent; outline: none;
+  border-radius: 14px;
+  background: var(--field); color: var(--ink);
+  font: inherit; padding: 0 16px;
+}
+.field input:focus { border-color: var(--purple); background: var(--white); }
+.err { min-height: 1.4em; font-size: 14px; color: var(--error); }
+.primary {
+  width: 100%; height: 52px; border: none; cursor: pointer;
+  border-radius: 999px;
+  background: var(--purple); color: var(--ink);
+  font: inherit; font-weight: 700; font-size: 16px;
+}
+.primary:active { transform: scale(.98); }
+.primary:disabled { opacity: .6; cursor: default; }
+.note { margin-top: 22px; font-size: 13px; color: var(--ink-soft); }
+
+@keyframes fadeUp { from { opacity: 0; transform: translateY(8px); } to { opacity: 1; transform: none; } }
+
+
+/* ---------- 3. Main app ---------- */
+.app {
+  position: fixed; inset: 0;
+  background: var(--bg);
+  display: flex; flex-direction: column;
+  max-width: 720px;
+  margin: 0 auto;
+}
+@media (min-width: 721px) { .app { box-shadow: 0 0 0 100vmax var(--bg); } }
+
+.topbar {
+  display: flex; align-items: center; justify-content: space-between;
+  padding: 16px 20px 8px;
+  padding-top: max(16px, env(safe-area-inset-top));
+}
+.brand { display: flex; align-items: center; gap: 10px; }
+.brand-mark { display: block; width: 36px; height: 36px; }
+.brand-name { font-weight: 600; letter-spacing: .12em; font-size: 15px; }
+.icon-btn {
+  width: 40px; height: 40px; border: none; border-radius: 50%;
+  background: var(--surface); color: var(--ink);
+  display: flex; align-items: center; justify-content: center;
+  cursor: pointer;
+}
+.icon-btn:active { transform: scale(.94); }
+
+.chat {
+  flex: 1; overflow-y: auto;
+  padding: 12px 20px;
+  display: flex; flex-direction: column; gap: 12px;
+}
+.empty { margin: auto; text-align: center; padding: 0 12px; }
+.empty-mark { display: block; width: 84px; height: 84px; margin: 0 auto 16px; }
+.empty-title {
+  font-size: 22px; font-weight: 600; margin-bottom: 4px;
+  overflow-wrap: anywhere;
+}
+.empty-sub { color: var(--ink-soft); }
+
+.msg {
+  max-width: 82%;
+  padding: 11px 15px;
+  border-radius: var(--radius);
+  overflow-wrap: anywhere;
+  animation: rise .25s ease;
+}
+.msg.user { align-self: flex-end; background: var(--purple); color: var(--ink); border-bottom-right-radius: 8px; }
+.msg.ai { align-self: flex-start; background: var(--surface); border-bottom-left-radius: 8px; }
+@keyframes rise { from { opacity: 0; transform: translateY(6px); } to { opacity: 1; transform: none; } }
+
+.composer {
+  display: flex; gap: 10px;
+  padding: 10px 16px;
+  padding-bottom: max(14px, env(safe-area-inset-bottom));
+}
+.composer input {
+  flex: 1; min-width: 0;
+  border: none; outline: none;
+  background: var(--surface); color: var(--ink);
+  font: inherit; padding: 14px 18px; border-radius: 999px;
+}
+.composer input::placeholder { color: var(--ink-soft); }
+.composer input:focus { box-shadow: 0 0 0 2px var(--purple-soft); }
+.send {
+  width: 50px; height: 50px; flex: none;
+  border: none; border-radius: 50%;
+  background: var(--purple); color: var(--ink);
+  display: flex; align-items: center; justify-content: center;
+  cursor: pointer; transition: transform .15s ease;
+}
+.send:active { transform: scale(.94); }
+
+/* Reduced motion: show the finished logo straight away */
+@media (prefers-reduced-motion: reduce) {
+  *, *::before, *::after { animation: none !important; transition: none !important; }
+  .l-ring, .l-y { stroke-dashoffset: 0 !important; }
+  .splash-title span { opacity: 1 !important; transform: none !important; }
+}
+  </style>
 </head>
 <body>
 
@@ -27,110 +221,23 @@
     </h1>
   </div>
 
-  <!-- 2. Sign up / Log in (only for people who are not signed in) -->
-  <section id="auth" class="auth hidden" aria-label="Sign up or log in">
+  <!-- 2. Sign up (first time only) -->
+  <section id="auth" class="auth hidden" aria-label="Choose your email">
     <div class="auth-card">
       <img class="auth-logo" src="logo.svg" alt="YUNIKA AI">
-      <h2 id="authTitle" class="auth-title">Create your account</h2>
-      <p id="authSub" class="auth-sub">Sign up once to start using YUNIKA AI.</p>
+      <h2 class="auth-title">Welcome to YUNIKA AI</h2>
+      <p class="auth-sub">Choose your email to get started. No password needed.</p>
 
-      <div id="seg" class="seg" role="tablist" aria-label="Sign up or log in">
-        <button type="button" id="tabSignup" class="seg-btn active" role="tab" aria-selected="true">Sign up</button>
-        <button type="button" id="tabLogin" class="seg-btn" role="tab" aria-selected="false">Log in</button>
-      </div>
-
-      <form id="signupForm" class="form" novalidate>
-        <label class="field">
-          <span>Name</span>
-          <input id="suName" type="text" autocomplete="name" maxlength="40" enterkeyhint="next">
-        </label>
+      <form id="signupForm" class="form" novalidate style="margin-top:24px">
         <label class="field">
           <span>Email</span>
-          <input id="suEmail" type="email" inputmode="email" autocomplete="email" autocapitalize="none" spellcheck="false" enterkeyhint="next">
-        </label>
-        <label class="field">
-          <span>Password <small>(at least 8 characters)</small></span>
-          <div class="pw">
-            <input id="suPass" type="password" autocomplete="new-password" enterkeyhint="next">
-            <button type="button" class="pw-toggle" data-target="suPass">Show</button>
-          </div>
-        </label>
-        <label class="field">
-          <span>Confirm password</span>
-          <div class="pw">
-            <input id="suPass2" type="password" autocomplete="new-password" enterkeyhint="done">
-            <button type="button" class="pw-toggle" data-target="suPass2">Show</button>
-          </div>
+          <input id="suEmail" type="email" inputmode="email" autocomplete="email" autocapitalize="none" spellcheck="false" enterkeyhint="done">
         </label>
         <p id="suError" class="err" role="alert"></p>
-        <button type="submit" id="suBtn" class="primary">Create account</button>
-      </form>
-
-      <form id="loginForm" class="form hidden" novalidate>
-        <label class="field">
-          <span>Email</span>
-          <input id="liEmail" type="email" inputmode="email" autocomplete="username" autocapitalize="none" spellcheck="false" enterkeyhint="next">
-        </label>
-        <label class="field">
-          <span>Password</span>
-          <div class="pw">
-            <input id="liPass" type="password" autocomplete="current-password" enterkeyhint="done">
-            <button type="button" class="pw-toggle" data-target="liPass">Show</button>
-          </div>
-        </label>
-        <p id="liError" class="err" role="alert"></p>
-        <button type="submit" id="liBtn" class="primary">Log in</button>
-        <button type="button" id="forgotBtn" class="linklike">Forgot password?</button>
-        <button type="button" id="resetBtn" class="linklike">Erase this device and start over</button>
-      </form>
-
-      <form id="resetForm" class="form hidden" novalidate>
-        <label class="field">
-          <span>Email</span>
-          <input id="rsEmail" type="email" inputmode="email" autocomplete="username" autocapitalize="none" spellcheck="false" enterkeyhint="next">
-        </label>
-        <label class="field">
-          <span>Recovery code</span>
-          <input id="rsCode" type="text" autocomplete="off" autocapitalize="characters" spellcheck="false" placeholder="XXXX-XXXX-XXXX-XXXX" enterkeyhint="next">
-        </label>
-        <label class="field">
-          <span>New password <small>(at least 8 characters)</small></span>
-          <div class="pw">
-            <input id="rsPass" type="password" autocomplete="new-password" enterkeyhint="next">
-            <button type="button" class="pw-toggle" data-target="rsPass">Show</button>
-          </div>
-        </label>
-        <label class="field">
-          <span>Confirm new password</span>
-          <div class="pw">
-            <input id="rsPass2" type="password" autocomplete="new-password" enterkeyhint="done">
-            <button type="button" class="pw-toggle" data-target="rsPass2">Show</button>
-          </div>
-        </label>
-        <p id="rsError" class="err" role="alert"></p>
-        <button type="submit" id="rsBtn" class="primary">Reset password</button>
-        <button type="button" id="rsBack" class="linklike">Back to log in</button>
+        <button type="submit" id="suBtn" class="primary">Continue</button>
       </form>
 
       <p class="note">Your account is stored only on this device. Nothing is sent to any server.</p>
-    </div>
-  </section>
-
-  <!-- 2b. Recovery code (shown once, right after sign up) -->
-  <section id="recovery" class="auth hidden" aria-label="Save your recovery code">
-    <div class="auth-card">
-      <img class="auth-logo" src="logo.svg" alt="YUNIKA AI">
-      <h2 class="auth-title">Save your recovery code</h2>
-      <p class="auth-sub">If you forget your password, this code is the only way back into your account. It is shown only once.</p>
-      <p id="rcCode" class="rc-code" aria-live="polite"></p>
-      <button type="button" id="rcCopy" class="soft">Copy code</button>
-      <p class="rc-tip">Write it on paper or save it in a safe place. Don't share it with anyone.</p>
-      <label class="check">
-        <input type="checkbox" id="rcCheck">
-        <span>I have saved my recovery code</span>
-      </label>
-      <p id="rcMsg" class="err" role="alert"></p>
-      <button type="button" id="rcDone" class="primary" disabled>Continue</button>
     </div>
   </section>
 
@@ -141,7 +248,7 @@
         <img class="brand-mark" src="logo.svg" alt="">
         <span class="brand-name">YUNIKA AI</span>
       </div>
-      <button type="button" id="logoutBtn" class="icon-btn" aria-label="Log out" title="Log out">
+      <button type="button" id="signoutBtn" class="icon-btn" aria-label="Sign out" title="Sign out">
         <svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
           <path d="M9 4H6a2 2 0 0 0-2 2v12a2 2 0 0 0 2 2h3"/><path d="M16 8l4 4-4 4M20 12H9"/>
         </svg>
@@ -166,6 +273,126 @@
     </form>
   </main>
 
-  <script src="app.js"></script>
+  <script>
+// YUNIKA AI - v8 (single file)
+// Flow: 3-second splash -> new user: choose email  |  returning user: straight into the app.
+// No passwords and no app lock. Everything stays on this device (localStorage). Nothing is sent to any server.
+// The AI itself is not connected yet.
+
+(function () {
+  var $ = function (id) { return document.getElementById(id); };
+
+  var splash = $("splash"), auth = $("auth"), app = $("app");
+  var SPLASH_MS = 3000;   // how long the logo plays
+  var K_USER = "yunika.user";
+
+  /* ---------- safe storage ---------- */
+  function getUser() {
+    try { var s = localStorage.getItem(K_USER); return s ? JSON.parse(s) : null; } catch (e) { return null; }
+  }
+  function setUser(u) {
+    try { localStorage.setItem(K_USER, JSON.stringify(u)); return true; } catch (e) { return false; }
+  }
+  function wipeEverything() {
+    try {
+      var keys = [];
+      for (var i = 0; i < localStorage.length; i++) keys.push(localStorage.key(i));
+      keys.forEach(function (k) { if (k && k.indexOf("yunika.") === 0) localStorage.removeItem(k); });
+    } catch (e) {}
+  }
+
+  // Older versions kept password / lock data. Those are gone now, so clean them up. Your email stays.
+  (function cleanOld() {
+    var u = getUser();
+    if (!u) return;
+    var dirty = false;
+    ["salt", "hash", "iter", "rsalt", "rhash", "riter", "cred", "skipLock"].forEach(function (k) {
+      if (k in u) { delete u[k]; dirty = true; }
+    });
+    if (dirty) setUser(u);
+    try { localStorage.removeItem("yunika.session"); localStorage.removeItem("yunika.lock"); } catch (e) {}
+  })();
+
+  /* ---------- screens ---------- */
+  function show(el) { el.classList.remove("hidden"); }
+  function hide(el) { el.classList.add("hidden"); }
+  function only(el) { [auth, app].forEach(function (s) { if (s === el) show(s); else hide(s); }); }
+
+  var greeting = $("greeting");
+  function enterApp(user) {
+    greeting.textContent = "Hello!";
+    only(app);
+  }
+
+  /* ---------- sign up (first time only) ---------- */
+  var EMAIL_RE = /^[^\s@]+@[^\s@]+\.[^\s@]{2,}$/;
+  var signupForm = $("signupForm");
+
+  signupForm.addEventListener("submit", function (e) {
+    e.preventDefault();
+    var err = $("suError");
+    err.textContent = "";
+    var email = $("suEmail").value.trim().toLowerCase();
+    if (!EMAIL_RE.test(email)) { err.textContent = "Please enter a valid email address."; return; }
+
+    var user = { email: email, created: Date.now() };
+    if (!setUser(user)) {
+      err.textContent = "Couldn't save your account. Allow site data for this page and try again.";
+      return;
+    }
+    signupForm.reset();
+    enterApp(user);
+  });
+
+  /* ---------- sign out ---------- */
+  $("signoutBtn").addEventListener("click", function () {
+    var ok = window.confirm(
+      "Sign out? This removes your email from this device.");
+    if (!ok) return;
+    wipeEverything();
+    signupForm.reset();
+    only(auth);
+  });
+
+  /* ---------- start: splash for 3 seconds, then decide where to go ---------- */
+  setTimeout(function () {
+    splash.classList.add("out");
+    setTimeout(function () { hide(splash); }, 450);
+    var user = getUser();
+    if (user) enterApp(user);        // already signed up -> straight into the app
+    else only(auth);                 // new -> sign up
+  }, SPLASH_MS);
+
+  /* ---------- chat (AI not connected yet) ---------- */
+  var chat = $("chat"), empty = $("empty"), form = $("composer"), input = $("input");
+
+  function addMessage(text, who) {
+    if (empty) { empty.remove(); empty = null; }
+    var el = document.createElement("div");
+    el.className = "msg " + who;
+    el.textContent = text; // textContent keeps it safe
+    chat.appendChild(el);
+    chat.scrollTop = chat.scrollHeight;
+  }
+
+  form.addEventListener("submit", function (e) {
+    e.preventDefault();
+    var text = input.value.trim();
+    if (!text) return;
+    addMessage(text, "user");
+    input.value = "";
+    setTimeout(function () {
+      addMessage("The AI isn't connected yet. I'll learn to reply in the next step.", "ai");
+    }, 500);
+  });
+
+  /* ---------- PWA (works offline) ---------- */
+  if ("serviceWorker" in navigator) {
+    window.addEventListener("load", function () {
+      navigator.serviceWorker.register("sw.js").catch(function () {});
+    });
+  }
+})();
+  </script>
 </body>
   </html>
