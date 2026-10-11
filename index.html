@@ -56,4 +56,411 @@ html, body {
   stroke-dasharray: 943;
   animation: ringDraw 1.1s cubic-bezier(.4, 0, .2, 1) .5s both;
 }
-.l-y { stro
+.l-y { stroke-dasharray: 100; }
+.l-y1 { animation: drawY .7s ease-out 1.1s both; }
+.l-y2 { animation: drawY .45s ease-out 1.65s both; }
+.l-orbit {
+  transform-origin: 256px 256px;
+  animation: orbitIn 1s cubic-bezier(.2, .7, .2, 1) 1.9s both;
+}
+
+.splash-title {
+  display: flex; justify-content: center;
+  margin-top: 30px;
+  font-size: 26px; font-weight: 700;
+  letter-spacing: .14em;
+  color: var(--ink);
+}
+.splash-title span {
+  display: inline-block;
+  opacity: 0; transform: translateY(10px);
+  animation: letterIn .5s cubic-bezier(.2, .8, .2, 1) forwards;
+  animation-delay: calc(1.8s + var(--i, 0) * 60ms);
+}
+.splash-title .gap { width: .55em; }
+
+@keyframes tileIn { from { transform: scale(.6); opacity: 0; } to { transform: none; opacity: 1; } }
+@keyframes ringDraw { from { stroke-dashoffset: 943; opacity: 0; } 2% { opacity: 1; } to { stroke-dashoffset: 0; opacity: 1; } }
+@keyframes drawY { from { stroke-dashoffset: 100; opacity: 0; } 1% { opacity: 1; } to { stroke-dashoffset: 0; opacity: 1; } }
+@keyframes orbitIn { from { transform: rotate(-360deg); opacity: 0; } 15% { opacity: 1; } to { transform: none; opacity: 1; } }
+@keyframes letterIn { to { opacity: 1; transform: none; } }
+
+/* ---------- 2. Sign up / Log in ---------- */
+.auth {
+  position: fixed; inset: 0; z-index: 20;
+  background: var(--white);
+  overflow-y: auto;
+  padding: 28px 20px;
+  padding-top: max(28px, env(safe-area-inset-top));
+  padding-bottom: max(28px, env(safe-area-inset-bottom));
+  animation: fadeUp .45s ease both;
+}
+.auth-card { max-width: 420px; margin: 0 auto; text-align: center; }
+.auth-logo { display: block; width: 76px; height: 76px; margin: 8px auto 18px; }
+.auth-title { font-size: 24px; font-weight: 700; line-height: 1.25; overflow-wrap: anywhere; }
+.auth-sub { margin-top: 6px; color: var(--ink-soft); }
+
+.form { display: flex; flex-direction: column; gap: 14px; text-align: left; }
+.field { display: flex; flex-direction: column; gap: 6px; }
+.field > span { font-size: 14px; font-weight: 600; }
+.field input {
+  width: 100%; height: 50px;
+  border: 1.5px solid transparent; outline: none;
+  border-radius: 14px;
+  background: var(--field); color: var(--ink);
+  font: inherit; padding: 0 16px;
+}
+.field input:focus { border-color: var(--purple); background: var(--white); }
+.err { min-height: 1.4em; font-size: 14px; color: var(--error); }
+.primary {
+  width: 100%; height: 52px; border: none; cursor: pointer;
+  border-radius: 999px;
+  background: var(--purple); color: var(--ink);
+  font: inherit; font-weight: 700; font-size: 16px;
+}
+.primary:active { transform: scale(.98); }
+.primary:disabled { opacity: .6; cursor: default; }
+.google-btn {
+  width: 100%; height: 52px; border: none; cursor: pointer;
+  border-radius: 999px; margin-top: 24px;
+  background: var(--purple); color: var(--ink);
+  font: inherit; font-weight: 700; font-size: 16px;
+  display: flex; align-items: center; justify-content: center; gap: 10px;
+}
+.google-btn:active { transform: scale(.98); }
+.google-btn:disabled { opacity: .6; cursor: default; }
+.google-btn .g { width: 22px; height: 22px; background: #fff; border-radius: 50%; padding: 3px; }
+.or { display: flex; align-items: center; gap: 12px; margin: 22px 0 6px; color: var(--ink-soft); font-size: 13px; }
+.or::before, .or::after { content: ""; flex: 1; height: 1px; background: #D9D9D6; }
+.note { margin-top: 22px; font-size: 13px; color: var(--ink-soft); }
+
+@keyframes fadeUp { from { opacity: 0; transform: translateY(8px); } to { opacity: 1; transform: none; } }
+
+
+/* ---------- 3. Main app ---------- */
+.app {
+  position: fixed; inset: 0;
+  background: var(--bg);
+  display: flex; flex-direction: column;
+  max-width: 720px;
+  margin: 0 auto;
+}
+@media (min-width: 721px) { .app { box-shadow: 0 0 0 100vmax var(--bg); } }
+
+.topbar {
+  display: flex; align-items: center; justify-content: space-between;
+  padding: 16px 20px 8px;
+  padding-top: max(16px, env(safe-area-inset-top));
+}
+.brand { display: flex; align-items: center; gap: 10px; }
+.brand-mark { display: block; width: 36px; height: 36px; }
+.brand-name { font-weight: 600; letter-spacing: .12em; font-size: 15px; }
+.icon-btn {
+  width: 40px; height: 40px; border: none; border-radius: 50%;
+  background: var(--surface); color: var(--ink);
+  display: flex; align-items: center; justify-content: center;
+  cursor: pointer;
+}
+.icon-btn:active { transform: scale(.94); }
+
+.chat {
+  flex: 1; overflow-y: auto;
+  padding: 12px 20px;
+  display: flex; flex-direction: column; gap: 12px;
+}
+.empty { margin: auto; text-align: center; padding: 0 12px; }
+.empty-mark { display: block; width: 84px; height: 84px; margin: 0 auto 16px; }
+.empty-title {
+  font-size: 22px; font-weight: 600; margin-bottom: 4px;
+  overflow-wrap: anywhere;
+}
+.empty-sub { color: var(--ink-soft); }
+
+.msg {
+  max-width: 82%;
+  padding: 11px 15px;
+  border-radius: var(--radius);
+  overflow-wrap: anywhere;
+  animation: rise .25s ease;
+}
+.msg.user { align-self: flex-end; background: var(--purple); color: var(--ink); border-bottom-right-radius: 8px; }
+.msg.ai { align-self: flex-start; background: var(--surface); border-bottom-left-radius: 8px; }
+@keyframes rise { from { opacity: 0; transform: translateY(6px); } to { opacity: 1; transform: none; } }
+
+.composer {
+  display: flex; gap: 10px;
+  padding: 10px 16px;
+  padding-bottom: max(14px, env(safe-area-inset-bottom));
+}
+.composer input {
+  flex: 1; min-width: 0;
+  border: none; outline: none;
+  background: var(--surface); color: var(--ink);
+  font: inherit; padding: 14px 18px; border-radius: 999px;
+}
+.composer input::placeholder { color: var(--ink-soft); }
+.composer input:focus { box-shadow: 0 0 0 2px var(--purple-soft); }
+.send {
+  width: 50px; height: 50px; flex: none;
+  border: none; border-radius: 50%;
+  background: var(--purple); color: var(--ink);
+  display: flex; align-items: center; justify-content: center;
+  cursor: pointer; transition: transform .15s ease;
+}
+.send:active { transform: scale(.94); }
+
+/* Reduced motion: show the finished logo straight away */
+@media (prefers-reduced-motion: reduce) {
+  *, *::before, *::after { animation: none !important; transition: none !important; }
+  .l-ring, .l-y { stroke-dashoffset: 0 !important; }
+  .splash-title span { opacity: 1 !important; transform: none !important; }
+}
+  </style>
+</head>
+<body>
+
+  <!-- 1. Splash: white screen, logo animation for 3 seconds -->
+  <div id="splash" class="splash" role="status" aria-label="YUNIKA AI">
+    <svg class="logo-anim" viewBox="0 0 512 512" width="168" height="168" aria-hidden="true">
+      <rect class="l-tile" width="512" height="512" rx="120" fill="#F4EEFB"/>
+      <circle class="l-ring" cx="256" cy="256" r="150" fill="none" stroke="#C173F5" stroke-width="30" transform="rotate(-90 256 256)"/>
+      <path class="l-y l-y1" d="M196 200 L256 275 L256 345" pathLength="100" fill="none" stroke="#2A1540" stroke-width="36" stroke-linecap="round" stroke-linejoin="round"/>
+      <path class="l-y l-y2" d="M316 200 L256 275" pathLength="100" fill="none" stroke="#2A1540" stroke-width="36" stroke-linecap="round" stroke-linejoin="round"/>
+      <g class="l-orbit"><circle cx="352" cy="141" r="30" fill="#2A1540" stroke="#F4EEFB" stroke-width="12"/></g>
+    </svg>
+    <h1 class="splash-title" aria-hidden="true">
+      <span style="--i:0">Y</span><span style="--i:1">U</span><span style="--i:2">N</span><span style="--i:3">I</span><span style="--i:4">K</span><span style="--i:5">A</span><span class="gap"></span><span style="--i:7">A</span><span style="--i:8">I</span>
+    </h1>
+  </div>
+
+  <!-- 2. Sign up (first time only) -->
+  <section id="auth" class="auth hidden" aria-label="Choose your email">
+    <div class="auth-card">
+      <img class="auth-logo" src="logo.svg" alt="YUNIKA AI">
+      <h2 class="auth-title">Welcome to YUNIKA AI</h2>
+      <p class="auth-sub">Choose your account to get started. No password needed.</p>
+
+      <button type="button" id="googleBtn" class="google-btn">
+        <svg class="g" viewBox="0 0 48 48" aria-hidden="true"><path fill="#EA4335" d="M24 9.5c3.5 0 6.6 1.2 9.1 3.6l6.8-6.8C35.8 2.4 30.3 0 24 0 14.6 0 6.5 5.4 2.6 13.2l7.9 6.1C12.4 13.6 17.7 9.5 24 9.5z"/><path fill="#4285F4" d="M46.5 24.5c0-1.6-.1-3.1-.4-4.5H24v9h12.7c-.6 3-2.2 5.5-4.7 7.2l7.6 5.9c4.4-4.1 6.9-10.1 6.9-17.6z"/><path fill="#FBBC05" d="M10.5 28.7a14.5 14.5 0 0 1 0-9.4l-7.9-6.1a24 24 0 0 0 0 21.6l7.9-6.1z"/><path fill="#34A853" d="M24 48c6.5 0 11.9-2.1 15.9-5.8l-7.6-5.9c-2.1 1.4-4.9 2.3-8.3 2.3-6.3 0-11.6-4.1-13.5-9.8l-7.9 6.1C6.5 42.6 14.6 48 24 48z"/></svg>
+        <span>Continue with Google</span>
+      </button>
+      <p id="gError" class="err" role="alert"></p>
+
+      <div class="or">OR</div>
+
+      <form id="signupForm" class="form" novalidate style="margin-top:8px">
+        <label class="field">
+          <span>Email</span>
+          <input id="suEmail" type="email" inputmode="email" autocomplete="email" autocapitalize="none" spellcheck="false" enterkeyhint="done">
+        </label>
+        <p id="suError" class="err" role="alert"></p>
+        <button type="submit" id="suBtn" class="primary">Continue with email</button>
+      </form>
+
+      <p class="note">Your account is stored only on this device. We never receive your Google password.</p>
+    </div>
+  </section>
+
+  <!-- 3. Main app -->
+  <main id="app" class="app hidden">
+    <header class="topbar">
+      <div class="brand">
+        <img class="brand-mark" src="logo.svg" alt="">
+        <span class="brand-name">YUNIKA AI</span>
+      </div>
+      <button type="button" id="signoutBtn" class="icon-btn" aria-label="Sign out" title="Sign out">
+        <svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+          <path d="M9 4H6a2 2 0 0 0-2 2v12a2 2 0 0 0 2 2h3"/><path d="M16 8l4 4-4 4M20 12H9"/>
+        </svg>
+      </button>
+    </header>
+
+    <section id="chat" class="chat" aria-live="polite">
+      <div id="empty" class="empty">
+        <img class="empty-mark" src="logo.svg" alt="">
+        <p id="greeting" class="empty-title">Hello!</p>
+        <p class="empty-sub">I'm YUNIKA AI. What would you like to do today?</p>
+      </div>
+    </section>
+
+    <form id="composer" class="composer" autocomplete="off">
+      <input id="input" type="text" placeholder="Type a message…" aria-label="Type a message" enterkeyhint="send">
+      <button type="submit" class="send" aria-label="Send">
+        <svg viewBox="0 0 24 24" width="22" height="22" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+          <path d="M5 12h14M13 6l6 6-6 6"/>
+        </svg>
+      </button>
+    </form>
+  </main>
+
+  <script>
+// YUNIKA AI - v9 (single file)
+// Flow: 3-second splash -> new user: choose Google account (or type email)  |  returning user: straight into the app.
+// No passwords and no app lock. Everything stays on this device (localStorage). Nothing is sent to any server.
+// The AI itself is not connected yet.
+
+(function () {
+  var $ = function (id) { return document.getElementById(id); };
+
+  var splash = $("splash"), auth = $("auth"), app = $("app");
+  var SPLASH_MS = 3000;   // how long the logo plays
+  var K_USER = "yunika.user";
+
+  /* ---------- safe storage ---------- */
+  function getUser() {
+    try { var s = localStorage.getItem(K_USER); return s ? JSON.parse(s) : null; } catch (e) { return null; }
+  }
+  function setUser(u) {
+    try { localStorage.setItem(K_USER, JSON.stringify(u)); return true; } catch (e) { return false; }
+  }
+  function wipeEverything() {
+    try {
+      var keys = [];
+      for (var i = 0; i < localStorage.length; i++) keys.push(localStorage.key(i));
+      keys.forEach(function (k) { if (k && k.indexOf("yunika.") === 0) localStorage.removeItem(k); });
+    } catch (e) {}
+  }
+
+  // Older versions kept password / lock data. Those are gone now, so clean them up. Your email stays.
+  (function cleanOld() {
+    var u = getUser();
+    if (!u) return;
+    var dirty = false;
+    ["salt", "hash", "iter", "rsalt", "rhash", "riter", "cred", "skipLock"].forEach(function (k) {
+      if (k in u) { delete u[k]; dirty = true; }
+    });
+    if (dirty) setUser(u);
+    try { localStorage.removeItem("yunika.session"); localStorage.removeItem("yunika.lock"); } catch (e) {}
+  })();
+
+  /* ---------- screens ---------- */
+  function show(el) { el.classList.remove("hidden"); }
+  function hide(el) { el.classList.add("hidden"); }
+  function only(el) { [auth, app].forEach(function (s) { if (s === el) show(s); else hide(s); }); }
+
+  var greeting = $("greeting");
+  function enterApp(user) {
+    greeting.textContent = "Hello!";
+    only(app);
+  }
+
+  /* ---------- sign up (first time only) ---------- */
+  var EMAIL_RE = /^[^\s@]+@[^\s@]+\.[^\s@]{2,}$/;
+  var signupForm = $("signupForm");
+
+  signupForm.addEventListener("submit", function (e) {
+    e.preventDefault();
+    var err = $("suError");
+    err.textContent = "";
+    var email = $("suEmail").value.trim().toLowerCase();
+    if (!EMAIL_RE.test(email)) { err.textContent = "Please enter a valid email address."; return; }
+
+    var user = { email: email, created: Date.now() };
+    if (!setUser(user)) {
+      err.textContent = "Couldn't save your account. Allow site data for this page and try again.";
+      return;
+    }
+    signupForm.reset();
+    enterApp(user);
+  });
+
+  /* ---------- Continue with Google (account chooser) ---------- */
+  var GOOGLE_CLIENT_ID = "366800918126-8dm9ekhdkok4khdj67ndj0se615kc9lt.apps.googleusercontent.com";
+  var googleBtn = $("googleBtn"), gErr = $("gError"), gTokenClient = null;
+
+  function loadGoogle(cb) {
+    if (window.google && google.accounts && google.accounts.oauth2) { cb(); return; }
+    var sc = document.createElement("script");
+    sc.src = "https://accounts.google.com/gsi/client";
+    sc.async = true;
+    sc.onload = cb;
+    sc.onerror = function () { gErr.textContent = "Couldn't reach Google. Check your internet and try again."; googleBtn.disabled = false; };
+    document.head.appendChild(sc);
+  }
+
+  function finishGoogle(accessToken) {
+    fetch("https://www.googleapis.com/oauth2/v3/userinfo", { headers: { Authorization: "Bearer " + accessToken } })
+      .then(function (r) { return r.json(); })
+      .then(function (info) {
+        var email = (info && info.email || "").toLowerCase();
+        if (!EMAIL_RE.test(email)) throw new Error("no email");
+        var user = { email: email, created: Date.now() };
+        if (!setUser(user)) { gErr.textContent = "Couldn't save your account on this device."; googleBtn.disabled = false; return; }
+        googleBtn.disabled = false;
+        enterApp(user);
+      })
+      .catch(function () { gErr.textContent = "Sign-in failed. Please try again."; googleBtn.disabled = false; });
+  }
+
+  googleBtn.addEventListener("click", function () {
+    gErr.textContent = "";
+    googleBtn.disabled = true;
+    loadGoogle(function () {
+      if (!gTokenClient) {
+        gTokenClient = google.accounts.oauth2.initTokenClient({
+          client_id: GOOGLE_CLIENT_ID,
+          scope: "openid email",
+          prompt: "select_account",
+          callback: function (resp) {
+            if (resp && resp.access_token) finishGoogle(resp.access_token);
+            else { gErr.textContent = "Sign-in was cancelled."; googleBtn.disabled = false; }
+          },
+          error_callback: function () { gErr.textContent = "Sign-in was cancelled."; googleBtn.disabled = false; }
+        });
+      }
+      gTokenClient.requestAccessToken();
+    });
+  });
+
+  /* ---------- sign out ---------- */
+  $("signoutBtn").addEventListener("click", function () {
+    var ok = window.confirm(
+      "Sign out? This removes your email from this device.");
+    if (!ok) return;
+    wipeEverything();
+    signupForm.reset();
+    only(auth);
+  });
+
+  /* ---------- start: splash for 3 seconds, then decide where to go ---------- */
+  setTimeout(function () {
+    splash.classList.add("out");
+    setTimeout(function () { hide(splash); }, 450);
+    var user = getUser();
+    if (user) enterApp(user);        // already signed up -> straight into the app
+    else only(auth);                 // new -> sign up
+  }, SPLASH_MS);
+
+  /* ---------- chat (AI not connected yet) ---------- */
+  var chat = $("chat"), empty = $("empty"), form = $("composer"), input = $("input");
+
+  function addMessage(text, who) {
+    if (empty) { empty.remove(); empty = null; }
+    var el = document.createElement("div");
+    el.className = "msg " + who;
+    el.textContent = text; // textContent keeps it safe
+    chat.appendChild(el);
+    chat.scrollTop = chat.scrollHeight;
+  }
+
+  form.addEventListener("submit", function (e) {
+    e.preventDefault();
+    var text = input.value.trim();
+    if (!text) return;
+    addMessage(text, "user");
+    input.value = "";
+    setTimeout(function () {
+      addMessage("The AI isn't connected yet. I'll learn to reply in the next step.", "ai");
+    }, 500);
+  });
+
+  /* ---------- PWA (works offline) ---------- */
+  if ("serviceWorker" in navigator) {
+    window.addEventListener("load", function () {
+      navigator.serviceWorker.register("sw.js").catch(function () {});
+    });
+  }
+})();
+  </script>
+</body>
+  </html>
