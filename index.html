@@ -209,6 +209,80 @@ html, body {
 }
 .send:active { transform: scale(.94); }
 
+
+/* ---------- 4. Home screen (dark) ---------- */
+.home {
+  position: fixed; inset: 0; z-index: 10; overflow: hidden;
+  background: radial-gradient(ellipse at 50% 35%, #4b1d8f 0%, #24104d 45%, #0b0618 100%);
+  color: #fff; user-select: none; -webkit-user-select: none; touch-action: none;
+}
+.home .glow {
+  position: absolute; left: 50%; top: 38%; width: 320px; height: 320px;
+  transform: translate(-50%, -50%);
+  background: radial-gradient(#a56bff55, transparent 65%); pointer-events: none;
+}
+.hl { position: absolute; top: max(46px, env(safe-area-inset-top)); left: 0; right: 0; text-align: center; font-size: 12px; letter-spacing: .25em; color: #c9b3ff; pointer-events: none; }
+.hh { position: absolute; top: calc(max(46px, env(safe-area-inset-top)) + 22px); left: 0; right: 0; text-align: center; font-size: 26px; font-weight: 600; pointer-events: none; }
+.stage { position: absolute; inset: 0; pointer-events: none; }
+.tile {
+  position: absolute; width: 68px; display: flex; flex-direction: column; align-items: center; gap: 5px;
+  font-size: 11px; text-align: center; cursor: pointer;
+  opacity: 0; transform: translateY(70px) scale(.8); pointer-events: none;
+  transition: opacity .35s ease, transform .45s cubic-bezier(.2, 1.1, .3, 1);
+  transition-delay: calc(var(--i) * 25ms);
+}
+.stage.show .tile { opacity: 1; transform: none; pointer-events: auto; }
+.stage.edit .tile { touch-action: none; }
+.stage.edit .orb { border-style: dashed; animation: wob .5s ease-in-out infinite alternate; }
+@keyframes wob { from { transform: rotate(-3deg); } to { transform: rotate(3deg); } }
+.tile.drag { z-index: 5; transition: none; }
+.orb {
+  position: relative; width: 56px; height: 56px; border-radius: 50%;
+  background: transparent; border: 1.5px solid #d9c2ff;
+  box-shadow: 0 0 14px #a56bffaa, inset 0 0 10px #a56bff55;
+  display: flex; align-items: center; justify-content: center; font-size: 24px;
+}
+.orb img { width: 100%; height: 100%; object-fit: contain; border-radius: 50%; pointer-events: none; }
+.num { position: absolute; top: -4px; right: -6px; min-width: 18px; padding: 1px 5px; border-radius: 9px; background: #ff5fa8; font-size: 10px; font-weight: 700; line-height: 1.4; }
+.lbl { max-width: 68px; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; text-shadow: 0 1px 6px #000a; }
+.arrow {
+  position: absolute; left: 50%; bottom: max(20px, env(safe-area-inset-bottom)); transform: translateX(-50%);
+  width: 46px; height: 46px; border-radius: 50%; z-index: 6; cursor: pointer;
+  background: #ffffff1f; border: 1px solid #ffffff66; color: #fff;
+  display: grid; place-items: center; box-shadow: 0 0 18px #a56bff88;
+}
+.arrow svg { transition: transform .35s ease; }
+.stage.show ~ .arrow svg { transform: rotate(180deg); }
+.editbar {
+  position: absolute; top: max(14px, env(safe-area-inset-top)); left: 12px; right: 12px; z-index: 7;
+  display: flex; align-items: center; justify-content: space-between; gap: 10px;
+  background: #1b0d3acc; border: 1px solid #ffffff44; border-radius: 999px; padding: 6px 8px 6px 16px; font-size: 13px;
+}
+.editbar button { border: none; border-radius: 999px; background: var(--purple); color: var(--ink); font: inherit; font-weight: 700; padding: 8px 18px; cursor: pointer; }
+.toast {
+  position: absolute; left: 50%; bottom: 96px; transform: translate(-50%, 10px); z-index: 8;
+  background: #000c; padding: 9px 18px; border-radius: 999px; font-size: 13px; opacity: 0; pointer-events: none; transition: .25s;
+}
+.toast.on { opacity: 1; transform: translate(-50%, 0); }
+.scrim { position: absolute; inset: 0; z-index: 9; background: #0008; }
+.sheet {
+  position: absolute; left: 0; right: 0; bottom: 0; z-index: 10; max-width: 720px; margin: 0 auto;
+  background: #1b0d3a; border-top: 1px solid #ffffff33; border-radius: 22px 22px 0 0;
+  padding: 18px 18px max(18px, env(safe-area-inset-bottom)); touch-action: auto; user-select: auto; -webkit-user-select: auto;
+  max-height: 88vh; overflow-y: auto;
+}
+.sheet h3 { font-size: 17px; margin-bottom: 12px; }
+.sheet .row { display: flex; gap: 10px; margin-bottom: 10px; }
+.sheet label { flex: 1; display: flex; flex-direction: column; gap: 4px; font-size: 12px; color: #c9b3ff; }
+.sheet input[type=text], .sheet input[type=number] {
+  width: 100%; height: 42px; border-radius: 12px; border: 1px solid #ffffff33; background: #ffffff12; color: #fff; font: inherit; font-size: 15px; padding: 0 12px; outline: none;
+}
+.sheet .btns { display: flex; gap: 8px; flex-wrap: wrap; margin: 4px 0 10px; }
+.sheet button { border: 1px solid #ffffff44; background: #ffffff14; color: #fff; border-radius: 999px; font: inherit; font-size: 14px; padding: 10px 16px; cursor: pointer; }
+.sheet button.main { background: var(--purple); border-color: var(--purple); color: var(--ink); font-weight: 700; }
+.sheet .prev { width: 56px; height: 56px; flex: none; }
+.sheet .hint { font-size: 12px; color: #ffffff99; margin-bottom: 10px; }
+
 /* Reduced motion: show the finished logo straight away */
 @media (prefers-reduced-motion: reduce) {
   *, *::before, *::after { animation: none !important; transition: none !important; }
@@ -261,18 +335,70 @@ html, body {
     </div>
   </section>
 
-  <!-- 3. Main app -->
+  <!-- 3. Home screen -->
+  <section id="home" class="home hidden" aria-label="Home">
+    <div class="glow"></div>
+    <div class="hl">YOUR AI WORLD</div>
+    <div class="hh">Hello there ✦</div>
+    <div id="stage" class="stage"></div>
+    <div id="editBar" class="editbar hidden"><span>Drag buttons &middot; tap one to edit</span><button type="button" id="editDone">Done</button></div>
+    <button type="button" id="arrow" class="arrow" aria-label="Show or hide buttons">
+      <svg viewBox="0 0 24 24" width="22" height="22" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M6 15l6-6 6 6"/></svg>
+    </button>
+    <div id="toast" class="toast"></div>
+
+    <div id="scrim" class="scrim hidden"></div>
+
+    <div id="sheet" class="sheet hidden" role="dialog" aria-label="Edit button">
+      <h3>Edit button</h3>
+      <div class="row">
+        <div class="orb prev" id="shPreview"></div>
+        <div style="flex:1">
+          <div class="btns">
+            <button type="button" id="shPick">Choose photo</button>
+            <button type="button" id="shUnpick">Remove photo</button>
+          </div>
+        </div>
+      </div>
+      <input type="file" id="shFile" accept="image/*" class="hidden">
+      <p class="hint">Tip: use a PNG with a transparent background.</p>
+      <div class="row">
+        <label>Name<input type="text" id="shName" maxlength="12"></label>
+        <label>Number<input type="text" id="shNum" maxlength="3" inputmode="numeric"></label>
+      </div>
+      <div class="row">
+        <label>X position (0-100)<input type="number" id="shX" min="0" max="100"></label>
+        <label>Y position (0-100)<input type="number" id="shY" min="0" max="100"></label>
+      </div>
+      <div class="btns">
+        <button type="button" id="shReset">Reset this button</button>
+        <button type="button" id="shClose" class="main">Done</button>
+      </div>
+    </div>
+
+    <div id="setSheet" class="sheet hidden" role="dialog" aria-label="Settings">
+      <h3>Settings</h3>
+      <p class="hint">Signed in as <span id="setEmail"></span>. Your data stays on this device.</p>
+      <div class="btns">
+        <button type="button" id="setEdit">Edit buttons</button>
+        <button type="button" id="setResetAll">Reset all buttons</button>
+        <button type="button" id="setOut">Sign out</button>
+        <button type="button" id="setClose" class="main">Close</button>
+      </div>
+    </div>
+  </section>
+
+  <!-- 4. Chat screen -->
   <main id="app" class="app hidden">
     <header class="topbar">
+      <button type="button" id="backBtn" class="icon-btn" aria-label="Back to home" title="Home">
+        <svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M15 6l-6 6 6 6"/></svg>
+      </button>
       <div class="brand">
         <img class="brand-mark" src="logo.svg" alt="">
         <span class="brand-name">YUNIKA AI</span>
       </div>
-      <button type="button" id="signoutBtn" class="icon-btn" aria-label="Sign out" title="Sign out">
-        <svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
-          <path d="M9 4H6a2 2 0 0 0-2 2v12a2 2 0 0 0 2 2h3"/><path d="M16 8l4 4-4 4M20 12H9"/>
-        </svg>
-      </button>
+      <span style="width:40px"></span>
     </header>
 
     <section id="chat" class="chat" aria-live="polite">
@@ -294,15 +420,15 @@ html, body {
   </main>
 
   <script>
-// YUNIKA AI - v9 (single file)
-// Flow: 3-second splash -> new user: choose Google account (or type email)  |  returning user: straight into the app.
+// YUNIKA AI - v12 (single file): dark home screen with draggable buttons
+// Flow: 3-second splash -> new user: choose email  |  returning user: straight into the app.
 // No passwords and no app lock. Everything stays on this device (localStorage). Nothing is sent to any server.
 // The AI itself is not connected yet.
 
 (function () {
   var $ = function (id) { return document.getElementById(id); };
 
-  var splash = $("splash"), auth = $("auth"), app = $("app");
+  var splash = $("splash"), auth = $("auth"), app = $("app"), home = $("home");
   var SPLASH_MS = 3000;   // how long the logo plays
   var K_USER = "yunika.user";
 
@@ -336,12 +462,14 @@ html, body {
   /* ---------- screens ---------- */
   function show(el) { el.classList.remove("hidden"); }
   function hide(el) { el.classList.add("hidden"); }
-  function only(el) { [auth, app].forEach(function (s) { if (s === el) show(s); else hide(s); }); }
+  function only(el) { [auth, home, app].forEach(function (s) { if (s === el) show(s); else hide(s); }); }
 
   var greeting = $("greeting");
   function enterApp(user) {
     greeting.textContent = "Hello!";
-    only(app);
+    $("setEmail").textContent = user && user.email ? user.email : "";
+    only(home);
+    showHome();
   }
 
   /* ---------- sign up (first time only) ---------- */
@@ -413,11 +541,13 @@ html, body {
   });
 
   /* ---------- sign out ---------- */
-  $("signoutBtn").addEventListener("click", function () {
+  $("setOut").addEventListener("click", function () {
     var ok = window.confirm(
-      "Sign out? This removes your email from this device.");
+      "Sign out? This removes your email and your button layout from this device.");
     if (!ok) return;
     wipeEverything();
+    saved = {};
+    closeSheets();
     signupForm.reset();
     only(auth);
   });
@@ -454,6 +584,205 @@ html, body {
     }, 500);
   });
 
+  /* ---------- home screen buttons ---------- */
+  var stage = $("stage"), arrow = $("arrow"), toastEl = $("toast"), editBar = $("editBar");
+  var scrim = $("scrim"), sheet = $("sheet"), setSheet = $("setSheet");
+  var TW = 68, TH = 84, PAD = 10;
+  var K_BTN = "yunika.buttons";
+  var DEFAULTS = [
+    { id: "chat", name: "Chat", icon: "\uD83D\uDCAC", fx: 0, fy: .72 },
+    { id: "emotions", name: "Emotions", icon: "\uD83D\uDE0A", fx: .25, fy: .72 },
+    { id: "speaker", name: "Speaker", icon: "\uD83D\uDD0A", fx: .5, fy: .72 },
+    { id: "mic", name: "Mic", icon: "\uD83C\uDFA4", fx: .75, fy: .72 },
+    { id: "avatar", name: "Avatar", icon: "\uD83D\uDC67", fx: 1, fy: .72 },
+    { id: "outfit", name: "Outfit", icon: "\uD83D\uDC57", fx: 0, fy: .86 },
+    { id: "notes", name: "Notes", icon: "\uD83D\uDCDD", fx: .25, fy: .86 },
+    { id: "todo", name: "To-do", icon: "\u2705", fx: .5, fy: .86 },
+    { id: "alarm", name: "Alarm", icon: "\u23F0", fx: .75, fy: .86 },
+    { id: "settings", name: "Settings", icon: "\u2699\uFE0F", fx: 1, fy: .86 }
+  ];
+  var saved = {};
+  try { saved = JSON.parse(localStorage.getItem(K_BTN)) || {}; } catch (e) { saved = {}; }
+  var editing = false, tiles = {};
+
+  function persist() {
+    try { localStorage.setItem(K_BTN, JSON.stringify(saved)); return true; }
+    catch (e) { toast("Not enough storage. Try a smaller photo."); return false; }
+  }
+  function cfg(id) {
+    var d = DEFAULTS.filter(function (x) { return x.id === id; })[0];
+    return Object.assign({}, d, saved[id] || {});
+  }
+  function patch(id, obj) { saved[id] = Object.assign(saved[id] || {}, obj); return persist(); }
+  var toastTimer = 0;
+  function toast(msg) {
+    toastEl.textContent = msg; toastEl.classList.add("on");
+    clearTimeout(toastTimer); toastTimer = setTimeout(function () { toastEl.classList.remove("on"); }, 1800);
+  }
+  function clamp(v, a, b) { return Math.max(a, Math.min(b, v)); }
+  function place(el, fx, fy) {
+    var W = stage.clientWidth, H = stage.clientHeight;
+    el.style.left = (PAD + fx * Math.max(0, W - 2 * PAD - TW)) + "px";
+    el.style.top = (fy * Math.max(0, H - TH)) + "px";
+  }
+  function fill(orb, c) {
+    orb.textContent = "";
+    if (c.img) { var im = document.createElement("img"); im.alt = ""; im.src = c.img; orb.appendChild(im); }
+    else { orb.textContent = c.icon; }
+  }
+  function buildTile(c, i) {
+    var el = document.createElement("div");
+    el.className = "tile"; el.style.setProperty("--i", i); el.dataset.id = c.id;
+    var orb = document.createElement("div"); orb.className = "orb"; fill(orb, c);
+    var badge = document.createElement("div"); badge.className = "num";
+    if (c.num) { badge.textContent = c.num; orb.appendChild(badge); }
+    var lbl = document.createElement("div"); lbl.className = "lbl"; lbl.textContent = c.name;
+    el.appendChild(orb); el.appendChild(lbl);
+    place(el, c.fx, c.fy);
+    wire(el);
+    return el;
+  }
+  function refreshTile(id) {
+    var old = tiles[id], c = cfg(id);
+    var n = buildTile(c, DEFAULTS.map(function (d) { return d.id; }).indexOf(id));
+    stage.replaceChild(n, old); tiles[id] = n;
+    n.style.transition = "none";
+  }
+  function renderAll() {
+    stage.textContent = ""; tiles = {};
+    DEFAULTS.forEach(function (d, i) { var c = cfg(d.id); var el = buildTile(c, i); stage.appendChild(el); tiles[d.id] = el; });
+  }
+
+  function act(id) {
+    if (id === "chat") { only(app); return; }
+    if (id === "settings") { openSettings(); return; }
+    toast(cfg(id).name + " \u2013 coming soon");
+  }
+
+  function wire(el) {
+    var id = el.dataset.id, timer = 0, down = false, moved = false, long = false;
+    var sx = 0, sy = 0, ox = 0, oy = 0, lx = 0, ly = 0;
+    function startDrag() { el.classList.add("drag"); ox = el.offsetLeft; oy = el.offsetTop; sx = lx; sy = ly; }
+    el.addEventListener("contextmenu", function (e) { e.preventDefault(); });
+    el.addEventListener("pointerdown", function (e) {
+      down = true; moved = false; long = false; sx = lx = e.clientX; sy = ly = e.clientY;
+      try { el.setPointerCapture(e.pointerId); } catch (x) {}
+      if (editing) { startDrag(); }
+      else {
+        timer = setTimeout(function () {
+          if (!down) return;
+          long = true; setEdit(true);
+          if (navigator.vibrate) try { navigator.vibrate(30); } catch (x) {}
+          startDrag();
+        }, 650);
+      }
+    });
+    el.addEventListener("pointermove", function (e) {
+      if (!down) return;
+      lx = e.clientX; ly = e.clientY;
+      var dx = lx - sx, dy = ly - sy;
+      if (!editing) { if (Math.abs(dx) > 10 || Math.abs(dy) > 10) { clearTimeout(timer); moved = true; } return; }
+      if (!el.classList.contains("drag")) return;
+      if (Math.abs(dx) > 6 || Math.abs(dy) > 6) moved = true;
+      var W = stage.clientWidth, H = stage.clientHeight;
+      el.style.left = clamp(ox + dx, PAD, W - PAD - TW) + "px";
+      el.style.top = clamp(oy + dy, 0, H - TH) + "px";
+    });
+    function end(cancel) {
+      if (!down) return; down = false; clearTimeout(timer);
+      var wasDrag = el.classList.contains("drag");
+      el.classList.remove("drag");
+      if (cancel) return;
+      if (editing) {
+        if (moved && wasDrag) {
+          var W = stage.clientWidth, H = stage.clientHeight;
+          var fx = (el.offsetLeft - PAD) / Math.max(1, W - 2 * PAD - TW);
+          var fy = el.offsetTop / Math.max(1, H - TH);
+          patch(id, { fx: clamp(fx, 0, 1), fy: clamp(fy, 0, 1) });
+        } else if (!moved && !long) { openSheet(id); }
+      } else if (!moved && !long) { act(id); }
+    }
+    el.addEventListener("pointerup", function () { end(false); });
+    el.addEventListener("pointercancel", function () { end(true); });
+  }
+
+  function setEdit(on) {
+    editing = on;
+    stage.classList.toggle("edit", on);
+    editBar.classList.toggle("hidden", !on);
+    if (on) stage.classList.add("show");
+  }
+  $("editDone").addEventListener("click", function () { setEdit(false); closeSheets(); });
+
+  arrow.addEventListener("click", function () {
+    if (editing) { setEdit(false); }
+    stage.classList.toggle("show");
+  });
+
+  function showHome() {
+    renderAll(); setEdit(false); closeSheets();
+    stage.classList.remove("show");   // buttons start hidden; tap the arrow
+  }
+  window.addEventListener("resize", function () {
+    DEFAULTS.forEach(function (d) { var c = cfg(d.id); if (tiles[d.id]) place(tiles[d.id], c.fx, c.fy); });
+  });
+
+  /* ---------- sheets ---------- */
+  var curId = null;
+  function closeSheets() {
+    sheet.classList.add("hidden"); setSheet.classList.add("hidden"); scrim.classList.add("hidden"); curId = null;
+  }
+  scrim.addEventListener("click", closeSheets);
+  $("shClose").addEventListener("click", closeSheets);
+  $("setClose").addEventListener("click", closeSheets);
+
+  function openSettings() { scrim.classList.remove("hidden"); setSheet.classList.remove("hidden"); }
+  $("setEdit").addEventListener("click", function () { closeSheets(); setEdit(true); });
+  $("setResetAll").addEventListener("click", function () {
+    if (!window.confirm("Reset all buttons to the default look and place?")) return;
+    saved = {}; persist(); closeSheets(); showHome(); toast("Buttons reset");
+  });
+
+  function syncSheet() {
+    var c = cfg(curId);
+    fill($("shPreview"), c);
+    $("shName").value = c.name; $("shNum").value = c.num || "";
+    $("shX").value = Math.round(c.fx * 100); $("shY").value = Math.round(c.fy * 100);
+  }
+  function openSheet(id) {
+    curId = id; syncSheet();
+    scrim.classList.remove("hidden"); sheet.classList.remove("hidden");
+  }
+  function reTile() { refreshTile(curId); tiles[curId].style.transition = ""; if (stage.classList.contains("show")) tiles[curId].style.transition = "none"; }
+  $("shName").addEventListener("input", function () { patch(curId, { name: this.value.trim() || cfg(curId).name }); reTile(); });
+  $("shNum").addEventListener("input", function () { patch(curId, { num: this.value.trim() }); reTile(); });
+  function posInput() {
+    var x = clamp(parseFloat($("shX").value) || 0, 0, 100), y = clamp(parseFloat($("shY").value) || 0, 0, 100);
+    patch(curId, { fx: x / 100, fy: y / 100 }); place(tiles[curId], x / 100, y / 100);
+  }
+  $("shX").addEventListener("input", posInput); $("shY").addEventListener("input", posInput);
+  $("shReset").addEventListener("click", function () { delete saved[curId]; persist(); reTile(); syncSheet(); });
+  $("shPick").addEventListener("click", function () { $("shFile").click(); });
+  $("shUnpick").addEventListener("click", function () { patch(curId, { img: "" }); reTile(); syncSheet(); });
+  $("shFile").addEventListener("change", function () {
+    var f = this.files && this.files[0]; this.value = "";
+    if (!f) return;
+    var url = URL.createObjectURL(f), im = new Image();
+    im.onload = function () {
+      var S = 160, cv = document.createElement("canvas"); cv.width = cv.height = S;
+      var ctx = cv.getContext("2d"), k = Math.min(S / im.width, S / im.height);
+      var w = im.width * k, h = im.height * k;
+      ctx.drawImage(im, (S - w) / 2, (S - h) / 2, w, h);   // PNG keeps transparency
+      URL.revokeObjectURL(url);
+      if (patch(curId, { img: cv.toDataURL("image/png") })) { reTile(); syncSheet(); }
+    };
+    im.onerror = function () { URL.revokeObjectURL(url); toast("Couldn't read that image."); };
+    im.src = url;
+  });
+
+  /* ---------- back to home from chat ---------- */
+  $("backBtn").addEventListener("click", function () { only(home); });
+
   /* ---------- PWA (works offline) ---------- */
   if ("serviceWorker" in navigator) {
     window.addEventListener("load", function () {
@@ -463,4 +792,4 @@ html, body {
 })();
   </script>
 </body>
-  </html>
+        </html>
