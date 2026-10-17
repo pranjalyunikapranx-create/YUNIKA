@@ -230,3 +230,10 @@ if ("serviceWorker" in navigator) {
     navigator.serviceWorker.register("sw.js").catch(function () {});
   });
 }
+/* ---------- keep buttons in place after chat / keyboard ---------- */
+function relayout() {
+  if (!stage.clientWidth) return;
+  DEFAULTS.forEach(function (d) { var c = cfg(d.id); if (tiles[d.id]) place(tiles[d.id], c.fx, c.fy); });
+}
+window.addEventListener("resize", relayout);
+$("backBtn").addEventListener("click", function () { relayout(); });
