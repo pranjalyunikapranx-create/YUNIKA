@@ -99,4 +99,13 @@ form.addEventListener("submit", function (e) {
       addMessage("Sorry, I couldn't reach my brain. Check your internet and your AI link, then try again.", "ai");
     })
     .then(function () { busy = false; sendBtn.disabled = false; });
-});
+});/* TEMP DEBUG: show what the AI link returns */
+(function () {
+  var of = window.fetch;
+  window.fetch = function (u, o) {
+    if (String(u).indexOf("script.google.com") < 0) return of.apply(this, arguments);
+    return of.apply(this, arguments).then(function (r) {
+      return r.clone().text().then(function (t) { alert("Relay replied: " + t.slice(0, 250)); return r; });
+    }, function (e) { alert("Network error: " + e); throw e; });
+  };
+})();
