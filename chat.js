@@ -99,3 +99,5 @@ form.addEventListener("submit", function (e) {
       addMessage("Sorry, I couldn't reach my brain. Check your internet and your AI link, then try again.", "ai");
     })
     .then(function () { busy = false; sendBtn.disabled = false; });
+    .then(function () { busy = false; sendBtn.disabled = false; });
+});
