@@ -115,3 +115,64 @@ function heard(t) {
   input.value = t;
   form.dispatchEvent(new Event("submit", { cancelable: true, bubbles: true }));
     }
+/* ---------- speaker ---------- */
+function pickVoice(text) {
+  var vs = window.speechSynthesis ? speechSynthesis.getVoices() : [];
+  var hindi = /[\u0900-\u097F]/.test(text || "");
+  var want = hindi ? /^hi/i : /^en-IN/i;
+  var best = null, bestScore = -1, i, sc;
+  for (i = 0; i < vs.length; i++) {
+    if (!want.test(vs[i].lang.replace("_", "-"))) continue;
+    sc = 1 + (/google/i.test(vs[i].name) ? 2 : 0) + (vs[i].localService ? 0 : 1);
+    if (sc > bestScore) { best = vs[i]; bestScore = sc; }
+  }
+  if (best) return best;
+  for (i = 0; i < vs.length; i++) if (/^en/i.test(vs[i].lang)) return vs[i];
+  return null;
+}
+function resumeListening() {
+  speaking = false;
+  if (micOn) { clearTimeout(restartTimer); restartTimer = setTimeout(startRec, 400); }
+}
+function speak(text) {
+  if (!spkOn || !window.speechSynthesis) return;
+  try {
+    speechSynthesis.cancel();
+    var u = new SpeechSynthesisUtterance(text);
+    var hin = /[\u0900-\u097F]/.test(text);
+    u.lang = hin ? "hi-IN" : "en-IN"; u.rate = 0.95; u.pitch = 1;
+    var v = pickVoice(text); if (v) { u.voice = v; u.lang = v.lang; }
+    u.onend = resumeListening; u.onerror = resumeListening;
+    speaking = true;
+    try { if (rec) rec.abort(); } catch (e) {}
+    recRunning = false;
+    speechSynthesis.speak(u);
+    setTimeout(function () { if (speaking && !speechSynthesis.speaking && !speechSynthesis.pending) resumeListening(); }, 3000);
+  } catch (e) { resumeListening(); }
+}
+function toggleSpk() {
+  spkOn = !spkOn; lsSet(K_SPK, spkOn ? "1" : "0"); paint();
+  if (spkOn) { say("Speaker on"); speak("Speaker on"); }
+  else { try { speechSynthesis.cancel(); } catch (e) {} resumeListening(); say("Speaker off"); }
+}
+
+/* ---------- show and read every new AI reply, on any screen ---------- */
+new MutationObserver(function (muts) {
+  muts.forEach(function (m) {
+    Array.prototype.forEach.call(m.addedNodes, function (n) {
+      if (n.nodeType !== 1 || !n.classList.contains("msg") || !n.classList.contains("ai") || n.classList.contains("typing")) return;
+      var text = n.firstChild ? n.firstChild.textContent : "";
+      if (!text) return;
+      showCap(text);
+      speak(text);
+    });
+  });
+}).observe(chat, { childList: true });
+
+document.addEventListener("visibilitychange", function () {
+  if (document.visibilityState === "visible" && micOn) { keepAwake(true); startRec(); }
+});
+paint();
+// end of voice.js
+// end of voice.js
+// end of voice.js
