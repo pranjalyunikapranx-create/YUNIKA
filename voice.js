@@ -73,7 +73,45 @@ act = function (id) {
   bar.replaceChild(w, bar.lastElementChild);
 })();
 
-/* ---------- mic ---------- */
 function keepAwake(on) {
   try {
-    if (on && navigator.wakeLock) navigator.wakeLock.request("screen").then(functio
+    if (on && navigator.wakeLock) navigator.wakeLock.request("screen").then(function (l) { wakeLock = l; }).catch(function () {});
+    else if (!on && wakeLock) { wakeLock.release(); wakeLock = null; }
+  } catch (e) {}
+}
+function toggleMic() {
+  if (micOn) { stopMic(); say("Mic off"); return; }
+  if (!SR) { say("This browser can't listen. Please use Chrome."); return; }
+  micOn = true; paint(); keepAwake(true); startRec(); say("Mic on - I'm listening");
+}
+function stopMic() {
+  micOn = false; clearTimeout(restartTimer);
+  try { if (rec) rec.abort(); } catch (e) {}
+  recRunning = false; keepAwake(false); paint();
+}
+function startRec() {
+  if (!micOn || speaking || recRunning) return;
+  rec = new SR();
+  rec.lang = micLang; rec.continuous = true; rec.interimResults = false; rec.maxAlternatives = 1;
+  rec.onstart = function () { recRunning = true; };
+  rec.onresult = function (e) {
+    var t = "";
+    for (var i = e.resultIndex; i < e.results.length; i++) if (e.results[i].isFinal) t += e.results[i][0].transcript;
+    t = t.trim();
+    if (t) heard(t);
+  };
+  rec.onerror = function (e) {
+    if (e.error === "not-allowed" || e.error === "service-not-allowed") { say("Mic is blocked. Allow the microphone for this site."); stopMic(); }
+  };
+  rec.onend = function () {
+    recRunning = false;
+    if (micOn && !speaking) { clearTimeout(restartTimer); restartTimer = setTimeout(startRec, 350); }
+  };
+  try { rec.start(); } catch (e) { recRunning = false; }
+}
+function heard(t) {
+  if (busy) return;
+  showCap("You: " + t);
+  input.value = t;
+  form.dispatchEvent(new Event("submit", { cancelable: true, bubbles: true }));
+    }
