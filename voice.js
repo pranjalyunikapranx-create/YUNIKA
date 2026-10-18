@@ -176,3 +176,4 @@ paint();
 // end of voice.js
 // end of voice.js
 // end of voice.js
+if (topLang) topLang.style.color = "#2a1a40";
