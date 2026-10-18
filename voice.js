@@ -4,6 +4,7 @@
 var K_SPK = "yunika.speaker";
 var SR = window.SpeechRecognition || window.webkitSpeechRecognition;
 var micOn = false, spkOn = lsGet(K_SPK) === "1";
+var micLang = lsGet("yunika.mlang") || "hi-IN";
 var speaking = false, rec = null, recRunning = false, wakeLock = null, restartTimer = 0, capTimer = 0;
 
 (function addStyle() {
@@ -31,7 +32,7 @@ function showCap(text) {
 function say(msg) { if (typeof toast === "function") toast(msg); }
 
 /* ---------- buttons: keep their ON look on every screen ---------- */
-var topMic = null, topSpk = null;
+var topMic = null, topSpk = null, topLang = null;
 function paint() {
   if (tiles.mic) tiles.mic.classList.toggle("on", micOn);
   if (tiles.speaker) tiles.speaker.classList.toggle("on", spkOn);
@@ -55,105 +56,24 @@ act = function (id) {
   if (!bar) return;
   var w = document.createElement("div");
   w.className = "vbtns";
-  topMic = document.createElement("button"); topMic.type = "button"; topMic.className = "vbtn"; topMic.textContent = "\uD83C\uDFA4";
-  topSpk = document.createElement("button"); topSpk.type = "button"; topSpk.className = "vbtn"; topSpk.textContent = "\uD83D\uDD0A";
+  topMic = document.createElement("button"); topMic.type = "button"; topMic.className = "vbtn"; topMic.textContent = "🎤";
+  topSpk = document.createElement("button"); topSpk.type = "button"; topSpk.className = "vbtn"; topSpk.textContent = "🔊";
   topMic.setAttribute("aria-label", "Mic on/off"); topSpk.setAttribute("aria-label", "Speaker on/off");
   topMic.addEventListener("click", toggleMic); topSpk.addEventListener("click", toggleSpk);
-  w.appendChild(topMic); w.appendChild(topSpk);
+  topLang = document.createElement("button"); topLang.type = "button"; topLang.className = "vbtn on";
+  topLang.style.fontSize = "12px"; topLang.style.color = "#fff"; topLang.setAttribute("aria-label", "Mic language");
+  topLang.textContent = micLang === "hi-IN" ? "हि" : "EN";
+  topLang.addEventListener("click", function () {
+    micLang = micLang === "hi-IN" ? "en-IN" : "hi-IN"; lsSet("yunika.mlang", micLang);
+    topLang.textContent = micLang === "hi-IN" ? "हि" : "EN";
+    say(micLang === "hi-IN" ? "Listening in Hindi" : "Listening in English");
+    if (micOn) { try { if (rec) rec.abort(); } catch (e) {} recRunning = false; }
+  });
+  w.appendChild(topLang); w.appendChild(topMic); w.appendChild(topSpk);
   bar.replaceChild(w, bar.lastElementChild);
 })();
 
 /* ---------- mic ---------- */
 function keepAwake(on) {
   try {
-    if (on && navigator.wakeLock) navigator.wakeLock.request("screen").then(function (l) { wakeLock = l; }).catch(function () {});
-    else if (!on && wakeLock) { wakeLock.release(); wakeLock = null; }
-  } catch (e) {}
-}
-function toggleMic() {
-  if (micOn) { stopMic(); say("Mic off"); return; }
-  if (!SR) { say("This browser can't listen. Please use Chrome."); return; }
-  micOn = true; paint(); keepAwake(true); startRec(); say("Mic on - I'm listening");
-}
-function stopMic() {
-  micOn = false; clearTimeout(restartTimer);
-  try { if (rec) rec.abort(); } catch (e) {}
-  recRunning = false; keepAwake(false); paint();
-}
-function startRec() {
-  if (!micOn || speaking || recRunning) return;
-  rec = new SR();
-  rec.lang = "hi-IN"; rec.continuous = false; rec.interimResults = false; rec.maxAlternatives = 1;
-  rec.onstart = function () { recRunning = true; };
-  rec.onresult = function (e) {
-    var t = "";
-    for (var i = e.resultIndex; i < e.results.length; i++) if (e.results[i].isFinal) t += e.results[i][0].transcript;
-    t = t.trim();
-    if (t) heard(t);
-  };
-  rec.onerror = function (e) {
-    if (e.error === "not-allowed" || e.error === "service-not-allowed") { say("Mic is blocked. Allow the microphone for this site."); stopMic(); }
-  };
-  rec.onend = function () {
-    recRunning = false;
-    if (micOn && !speaking) { clearTimeout(restartTimer); restartTimer = setTimeout(startRec, 350); }
-  };
-  try { rec.start(); } catch (e) { recRunning = false; }
-}
-function heard(t) {
-  if (busy) return;
-  showCap("You: " + t);
-  input.value = t;
-  form.dispatchEvent(new Event("submit", { cancelable: true, bubbles: true }));
-}
-
-/* ---------- speaker ---------- */
-function pickVoice() {
-  var vs = window.speechSynthesis ? speechSynthesis.getVoices() : [];
-  var i;
-  for (i = 0; i < vs.length; i++) if (/^hi/i.test(vs[i].lang)) return vs[i];
-  for (i = 0; i < vs.length; i++) if (/^en-IN/i.test(vs[i].lang)) return vs[i];
-  return null;
-}
-function resumeListening() {
-  speaking = false;
-  if (micOn) { clearTimeout(restartTimer); restartTimer = setTimeout(startRec, 400); }
-}
-function speak(text) {
-  if (!spkOn || !window.speechSynthesis) return;
-  try {
-    speechSynthesis.cancel();
-    var u = new SpeechSynthesisUtterance(text);
-    u.lang = "hi-IN"; u.rate = 1; u.pitch = 1.1;
-    var v = pickVoice(); if (v) u.voice = v;
-    u.onend = resumeListening; u.onerror = resumeListening;
-    speaking = true;                                   // do not listen to my own voice
-    try { if (rec) rec.abort(); } catch (e) {}
-    recRunning = false;
-    speechSynthesis.speak(u);
-    setTimeout(function () { if (speaking && !speechSynthesis.speaking && !speechSynthesis.pending) resumeListening(); }, 3000);
-  } catch (e) { resumeListening(); }
-}
-function toggleSpk() {
-  spkOn = !spkOn; lsSet(K_SPK, spkOn ? "1" : "0"); paint();
-  if (spkOn) { say("Speaker on"); speak("Speaker on"); }
-  else { try { speechSynthesis.cancel(); } catch (e) {} resumeListening(); say("Speaker off"); }
-}
-
-/* ---------- show and read every new AI reply, on any screen ---------- */
-new MutationObserver(function (muts) {
-  muts.forEach(function (m) {
-    Array.prototype.forEach.call(m.addedNodes, function (n) {
-      if (n.nodeType !== 1 || !n.classList.contains("msg") || !n.classList.contains("ai") || n.classList.contains("typing")) return;
-      var text = n.firstChild ? n.firstChild.textContent : "";
-      if (!text) return;
-      showCap(text);
-      speak(text);
-    });
-  });
-}).observe(chat, { childList: true });
-
-document.addEventListener("visibilitychange", function () {
-  if (document.visibilityState === "visible" && micOn) { keepAwake(true); startRec(); }
-});
-paint();
+    if (on && navigator.wakeLock) navigator.wakeLock.request("screen").then(functio
