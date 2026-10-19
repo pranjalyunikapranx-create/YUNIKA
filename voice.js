@@ -179,3 +179,67 @@ paint();
 if (topLang) topLang.style.color = "#2a1a40";
 micLang = "hi-IN"; lsSet("yunika.mlang", "hi-IN");
 if (topLang) topLang.style.display = "none";
+/* ---------- show my spoken Hindi in English letters ---------- */
+var ROM_C = { 0x15:"k",0x16:"kh",0x17:"g",0x18:"gh",0x19:"n",0x1A:"ch",0x1B:"chh",0x1C:"j",0x1D:"jh",0x1E:"n",0x1F:"t",0x20:"th",0x21:"d",0x22:"dh",0x23:"n",
+  0x24:"t",0x25:"th",0x26:"d",0x27:"dh",0x28:"n",0x2A:"p",0x2B:"f",0x2C:"b",0x2D:"bh",0x2E:"m",0x2F:"y",0x30:"r",0x32:"l",0x35:"v",0x36:"sh",0x37:"sh",0x38:"s",0x39:"h" };
+var ROM_V = { 0x05:"a",0x06:"aa",0x07:"i",0x08:"ee",0x09:"u",0x0A:"oo",0x0B:"ri",0x0F:"e",0x10:"ai",0x13:"o",0x14:"au",0x11:"o",0x04:"a" };
+var ROM_M = { 0x3E:"aa",0x3F:"i",0x40:"ee",0x41:"u",0x42:"oo",0x43:"ri",0x47:"e",0x48:"ai",0x4B:"o",0x4C:"au",0x49:"o",0x45:"e" };
+function romanWord(w) {
+  var sy = [], i, c, s, o, p, n;
+  for (i = 0; i < w.length; i++) {
+    c = w.charCodeAt(i) - 0x900;
+    if (ROM_C[c] !== undefined) {
+      s = { t: ROM_C[c], cons: true, v: null };
+      if (c === 0x1C && w.charCodeAt(i + 1) === 0x93C) { s.t = "z"; i++; }
+      else if (c === 0x21 && w.charCodeAt(i + 1) === 0x93C) { s.t = "r"; i++; }
+      else if (c === 0x22 && w.charCodeAt(i + 1) === 0x93C) { s.t = "rh"; i++; }
+      else if (w.charCodeAt(i + 1) === 0x93C) i++;
+      sy.push(s);
+    } else if (ROM_M[c] !== undefined) {
+      if (sy.length && sy[sy.length - 1].cons && sy[sy.length - 1].v === null) sy[sy.length - 1].v = ROM_M[c];
+      else sy.push({ t: ROM_M[c], cons: false });
+    } else if (c === 0x4D) {
+      if (sy.length && sy[sy.length - 1].cons) sy[sy.length - 1].v = "";
+    } else if (c === 0x02 || c === 0x01) {
+      sy.push({ t: "n", cons: false });
+    } else if (c === 0x03) {
+      sy.push({ t: "h", cons: false });
+    } else if (ROM_V[c] !== undefined) {
+      sy.push({ t: ROM_V[c], cons: false });
+    } else if (c === 0x64) {
+      sy.push({ t: ".", cons: false });
+    } else if (c !== 0x3C) {
+      sy.push({ t: w.charAt(i), cons: false });
+    }
+  }
+  o = "";
+  for (i = 0; i < sy.length; i++) {
+    s = sy[i]; o += s.t;
+    if (!s.cons) continue;
+    if (s.v !== null) { o += s.v; continue; }
+    if (i === sy.length - 1) continue;
+    p = sy[i - 1]; n = sy[i + 1];
+    if (i > 0 && p && (!p.cons || p.v !== "") && n && n.cons && n.v !== null && n.v !== "") continue;
+    o += "a";
+  }
+  return o.replace(/([a-z])aa/g, "$1a").replace(/ee/g, "i");
+}
+function toRoman(t) {
+  if (!/[\u0900-\u097F]/.test(t)) return t;
+  return t.replace(/[\u0900-\u097F]+/g, romanWord);
+}
+var _heardDev = heard;
+heard = function (t) { _heardDev(toRoman(t)); };/* ---------- show YUNIKA's replies in English letters, but speak them in Hindi ---------- */
+var lastAiOrig = "";
+var _addMsg = addMessage;
+addMessage = function (text, who, emo) {
+  if (who === "ai") lastAiOrig = text;
+  return _addMsg(toRoman(text), who, emo);
+};
+var _speakRom = speak;
+speak = function (text) {
+  _speakRom(lastAiOrig && toRoman(lastAiOrig) === text ? lastAiOrig : text);
+};
+Array.prototype.forEach.call(chat.querySelectorAll(".msg > div:first-child"), function (d) {
+  d.textContent = toRoman(d.textContent);
+});
