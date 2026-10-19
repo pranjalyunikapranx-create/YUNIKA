@@ -177,3 +177,5 @@ paint();
 // end of voice.js
 // end of voice.js
 if (topLang) topLang.style.color = "#2a1a40";
+micLang = "hi-IN"; lsSet("yunika.mlang", "hi-IN");
+if (topLang) topLang.style.display = "none";
