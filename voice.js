@@ -275,3 +275,28 @@ if (window.speechSynthesis) {
     _ssSpeak(u);
   };
 }
+/* ---------- better spelling for English words written in Hindi ---------- */
+function canonW(s) {
+  return s.replace(/[\u0901\u0902]/g, "\u0928").replace(/\u094D/g, "").replace(/\u093C/g, "")
+    .replace(/\u0942/g, "\u0941").replace(/\u0940/g, "\u093F").replace(/\u0948/g, "\u0947").replace(/\u094C/g, "\u094B");
+}
+var LOAN2 = {};
+(function () {
+  var L = {
+    "\u092F\u0942\u0928\u093F\u0915\u093E": "YUNIKA", "\u092A\u0930\u094D\u0938\u0928\u0932": "personal",
+    "\u0905\u0938\u093F\u0938\u094D\u091F\u0947\u0902\u091F": "assistant", "\u0921\u0949\u0915\u094D\u091F\u0930": "doctor",
+    "\u092E\u094B\u092C\u093E\u0907\u0932": "mobile", "\u092B\u094B\u0928": "phone", "\u0910\u092A": "app",
+    "\u092E\u0948\u0938\u0947\u091C": "message", "\u0939\u0947\u0932\u094B": "hello", "\u0913\u0915\u0947": "okay",
+    "\u0938\u0949\u0930\u0940": "sorry", "\u092A\u094D\u0932\u0940\u091C": "please", "\u0905\u0932\u093E\u0930\u094D\u092E": "alarm",
+    "\u0928\u094B\u091F\u094D\u0938": "notes", "\u0917\u0947\u092E": "game", "\u092E\u0942\u0935\u0940": "movie",
+    "\u0935\u0940\u0921\u093F\u092F\u094B": "video", "\u091F\u093E\u0907\u092E": "time", "\u092B\u094D\u0930\u0947\u0902\u0921": "friend"
+  };
+  for (var k in L) LOAN2[canonW(k)] = L[k];
+})();
+toRoman = function (t) {
+  if (!/[\u0900-\u097F]/.test(t)) return t;
+  return t.replace(/[\u0900-\u097F]+/g, function (w) {
+    var m = w.match(/^(.*?)([\u0964\u0965]*)$/);
+    return (LOAN2[canonW(m[1])] || romanWord(m[1])) + (m[2] ? "." : "");
+  });
+};
