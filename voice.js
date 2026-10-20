@@ -303,3 +303,13 @@ toRoman = function (t) {
 /* ---------- fix letters like z, r, f, q written as one Hindi character ---------- */
 ROM_C[0x58] = "q"; ROM_C[0x59] = "kh"; ROM_C[0x5A] = "g"; ROM_C[0x5B] = "z";
 ROM_C[0x5C] = "r"; ROM_C[0x5D] = "rh"; ROM_C[0x5E] = "f"; ROM_C[0x5F] = "y";
+/* ---------- never show any Hindi letters on screen ---------- */
+var _toRomanB = toRoman;
+toRoman = function (t) {
+  t = String(t);
+  if (!/[\u0900-\u097F]/.test(t)) return t;
+  return _toRomanB(t.normalize("NFD")).replace(/[\u0900-\u097F]/g, "");
+};
+Array.prototype.forEach.call(chat.querySelectorAll(".msg > div:first-child"), function (d) {
+  d.textContent = toRoman(d.textContent);
+});
