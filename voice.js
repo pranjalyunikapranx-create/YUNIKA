@@ -300,3 +300,6 @@ toRoman = function (t) {
     return (LOAN2[canonW(m[1])] || romanWord(m[1])) + (m[2] ? "." : "");
   });
 };
+/* ---------- fix letters like z, r, f, q written as one Hindi character ---------- */
+ROM_C[0x58] = "q"; ROM_C[0x59] = "kh"; ROM_C[0x5A] = "g"; ROM_C[0x5B] = "z";
+ROM_C[0x5C] = "r"; ROM_C[0x5D] = "rh"; ROM_C[0x5E] = "f"; ROM_C[0x5F] = "y";
