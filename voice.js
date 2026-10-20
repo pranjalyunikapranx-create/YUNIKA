@@ -319,3 +319,30 @@ LOAN2[canonW("\u0907\u0902\u0938\u094D\u091F\u093E\u0917\u094D\u0930\u093E\u092E
 LOAN2[canonW("\u091C\u0941\u0921\u093C\u0928\u093E")] = "judna";
 LOAN2[canonW("\u091C\u0941\u0921\u093C\u0928\u0947")] = "judne";
 LOAN2[canonW("\u091C\u0941\u0921\u093C")] = "jud";
+/* ---------- tap any YUNIKA message to hear it again (tap again to stop) ---------- */
+(function () {
+  var _addKeep = addMessage;
+  addMessage = function (text, who, emo) {
+    var el = _addKeep(text, who, emo);
+    if (who === "ai" && el && el.dataset) el.dataset.orig = text;
+    return el;
+  };
+  try {
+    var h = JSON.parse(lsGet("yunika.chat") || "[]"), ai = [], i;
+    for (i = 0; i < h.length; i++) if (h[i] && h[i].role === "ai" && typeof h[i].text === "string") ai.push(h[i].text);
+    var nodes = chat.querySelectorAll(".msg.ai");
+    if (nodes.length === ai.length) for (i = 0; i < nodes.length; i++) nodes[i].dataset.orig = ai[i];
+  } catch (e) {}
+  chat.addEventListener("click", function (e) {
+    var n = e.target.closest ? e.target.closest(".msg.ai") : null;
+    if (!n || n.classList.contains("typing")) return;
+    if (window.speechSynthesis && speechSynthesis.speaking) {
+      speechSynthesis.cancel(); speaking = false;
+      if (typeof resumeListening === "function") resumeListening();
+      return;
+    }
+    var t = n.dataset.orig || (n.firstChild ? n.firstChild.textContent : "");
+    if (!t) return;
+    var was = spkOn; spkOn = true; speak(t); spkOn = was;
+  });
+})();
