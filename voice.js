@@ -313,3 +313,9 @@ toRoman = function (t) {
 Array.prototype.forEach.call(chat.querySelectorAll(".msg > div:first-child"), function (d) {
   d.textContent = toRoman(d.textContent);
 });
+LOAN2[canonW("\u0915\u094D\u0930\u093F\u090F\u091F\u0930")] = "creator";
+LOAN2[canonW("\u0906\u0908\u0921\u0940")] = "ID";
+LOAN2[canonW("\u0907\u0902\u0938\u094D\u091F\u093E\u0917\u094D\u0930\u093E\u092E")] = "Instagram";
+LOAN2[canonW("\u091C\u0941\u0921\u093C\u0928\u093E")] = "judna";
+LOAN2[canonW("\u091C\u0941\u0921\u093C\u0928\u0947")] = "judne";
+LOAN2[canonW("\u091C\u0941\u0921\u093C")] = "jud";
