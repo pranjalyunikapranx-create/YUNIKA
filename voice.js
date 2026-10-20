@@ -243,3 +243,11 @@ speak = function (text) {
 Array.prototype.forEach.call(chat.querySelectorAll(".msg > div:first-child"), function (d) {
   d.textContent = toRoman(d.textContent);
 });
+/* ---------- say the name YUNIKA as a word, not letter by letter ---------- */
+if (window.speechSynthesis) {
+  var _ssSpeak = speechSynthesis.speak.bind(speechSynthesis);
+  speechSynthesis.speak = function (u) {
+    try { u.text = u.text.replace(/yunika/gi, "\u092F\u0942\u0928\u093F\u0915\u093E"); } catch (e) {}
+    _ssSpeak(u);
+  };
+}
