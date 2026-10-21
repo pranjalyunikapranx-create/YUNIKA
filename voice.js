@@ -436,3 +436,4 @@ speechSynthesis.speak = function (u) {
   sv.onclick = function () { F.forEach(function (f) { PZ[f[0]] = els[f[0]].value.trim().slice(0, 400); }); pzSave(); ov.style.display = "none"; };
   ov.addEventListener("click", function (e) { if (e.target === ov) ov.style.display = "none"; });
 })();
+(function () { var s = document.createElement("style"); s.textContent = "#pzb{top:58px !important;right:8px !important;width:34px !important;height:34px !important;font-size:17px !important}"; document.head.appendChild(s); })();
