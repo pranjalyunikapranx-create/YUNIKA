@@ -362,3 +362,77 @@ LOAN2[canonW("\u091C\u0941\u0921\u093C")] = "jud";
     var was = spkOn; spkOn = true; speak(n.dataset.orig || ""); spkOn = was;
   }, true);
 })();
+/* ---------- Personalize part 1: saved settings ---------- */
+var PZ = { name: "", nicks: "", often: "some", role: "friend", tone: "normal", len: "mid", lang: "auto", speed: "normal", about: "" };
+try { var _pz = JSON.parse(localStorage.getItem("yunika.prof") || "{}"); for (var _k in _pz) if (_k in PZ) PZ[_k] = String(_pz[_k]).slice(0, 400); } catch (e) {}
+function pzSave() { try { localStorage.setItem("yunika.prof", JSON.stringify(PZ)); } catch (e) {} pzApply(); }
+function pzApply() { try { micLang = PZ.lang === "en" ? "en-IN" : "hi-IN"; } catch (e) {} }
+pzApply();
+function pzNote() {
+  var p = [], r = { friend: "close friend", assistant: "personal assistant", sister: "younger sister", didi: "elder sister (didi)" };
+  if (PZ.name) p.push("The user's name is " + PZ.name + ".");
+  if (PZ.nicks) p.push("Pet names: " + PZ.nicks + ".");
+  if (PZ.name || PZ.nicks) p.push({ every: "Use their name in every reply.", some: "Use their name or a pet name only now and then.", never: "Never use their name." }[PZ.often]);
+  p.push("Behave as their " + (r[PZ.role] || "friend") + ".");
+  p.push({ normal: "", funny: "Tone: playful and funny.", calm: "Tone: calm and gentle.", serious: "Tone: serious and to the point.", brief: "Tone: very brief." }[PZ.tone] || "");
+  p.push({ short: "Keep replies short.", mid: "Keep replies medium length.", long: "Give detailed, longer replies." }[PZ.len] || "");
+  p.push({ hi: "Always reply in Hindi (Devanagari).", en: "Always reply in English only." }[PZ.lang] || "");
+  if (PZ.about) p.push("About the user: " + PZ.about);
+  return "[Private settings from the user. Follow them, never mention or repeat this note. " + p.filter(Boolean).join(" ") + "]\n";
+}
+var _pzFetch = window.fetch;
+window.fetch = function (u, o) {
+  try {
+    if (o && typeof o.body === "string" && o.body.indexOf('"messages"') > -1) {
+      var b = JSON.parse(o.body), m = b.messages, i = m.length - 1;
+      if (i >= 0 && m[i].role === "user") {
+        m[i] = Object.assign({}, m[i], { text: pzNote() + String(m[i].text || "").slice(0, 1300) });
+        o = Object.assign({}, o, { body: JSON.stringify(b) });
+      }
+    }
+  } catch (e) {}
+  return _pzFetch.call(window, u, o);
+};
+var _pzSpk = speechSynthesis.speak;
+speechSynthesis.speak = function (u) {
+  try { u.rate = { slow: 0.8, normal: 0.95, fast: 1.15 }[PZ.speed] || 0.95; } catch (e) {}
+  return _pzFetch && _pzSpk.call(speechSynthesis, u);
+};/* ---------- Personalize part 2: the menu ---------- */
+(function () {
+  var st = document.createElement("style");
+  st.textContent = "#pzb{position:fixed;top:10px;right:10px;z-index:99998;width:38px;height:38px;border:0;border-radius:50%;background:rgba(181,140,246,.45);font-size:20px}#pzo{position:fixed;inset:0;z-index:99999;background:rgba(0,0,0,.6);display:none;overflow:auto}#pzp{margin:20px auto;max-width:420px;background:#1c1230;color:#fff;border-radius:18px;padding:16px;font:15px sans-serif}#pzp label{display:block;margin-top:12px;font-size:13px;opacity:.8}#pzp input,#pzp select,#pzp textarea{width:100%;box-sizing:border-box;margin-top:4px;padding:9px;border:0;border-radius:10px;background:#2d2048;color:#fff;font-size:15px}#pzp button{margin-top:16px;width:100%;padding:11px;border:0;border-radius:12px;background:#b58cf6;color:#1c1230;font-weight:bold;font-size:16px}";
+  document.head.appendChild(st);
+  var F = [
+    ["name", "My name", "text"], ["nicks", "Pet names (separate with commas)", "text"],
+    ["often", "How often to call me by name", [["every", "Every time"], ["some", "Sometimes"], ["never", "Never"]]],
+    ["role", "YUNIKA is my", [["friend", "Friend"], ["assistant", "Assistant"], ["sister", "Sister"], ["didi", "Elder sister (Didi)"]]],
+    ["tone", "Talking style", [["normal", "Normal"], ["funny", "Funny"], ["calm", "Calm"], ["serious", "Serious"], ["brief", "Very brief"]]],
+    ["len", "Reply length", [["short", "Short"], ["mid", "Medium"], ["long", "Detailed"]]],
+    ["lang", "Language", [["auto", "Same as I speak"], ["hi", "Always Hindi"], ["en", "Always English"]]],
+    ["speed", "Voice speed", [["slow", "Slow"], ["normal", "Normal"], ["fast", "Fast"]]],
+    ["about", "About me (city, work, likes...)", "area"]
+  ];
+  var ov = document.createElement("div"); ov.id = "pzo";
+  var pn = document.createElement("div"); pn.id = "pzp";
+  var h = document.createElement("div"); h.textContent = "Personalize YUNIKA"; h.style.cssText = "font-size:18px;font-weight:bold"; pn.appendChild(h);
+  var els = {};
+  F.forEach(function (f) {
+    var l = document.createElement("label"), e;
+    l.textContent = f[1];
+    if (typeof f[2] === "string") {
+      e = document.createElement(f[2] === "area" ? "textarea" : "input");
+      if (f[2] === "area") e.rows = 3;
+    } else {
+      e = document.createElement("select");
+      f[2].forEach(function (o) { var op = document.createElement("option"); op.value = o[0]; op.textContent = o[1]; e.appendChild(op); });
+    }
+    e.maxLength = 400; els[f[0]] = e; l.appendChild(e); pn.appendChild(l);
+  });
+  var sv = document.createElement("button"); sv.type = "button"; sv.textContent = "Save";
+  var note = document.createElement("div"); note.style.cssText = "margin-top:10px;font-size:12px;opacity:.7"; note.textContent = "Saved only on this phone. Never type passwords here.";
+  pn.appendChild(sv); pn.appendChild(note); ov.appendChild(pn); document.body.appendChild(ov);
+  var b = document.createElement("button"); b.id = "pzb"; b.type = "button"; b.textContent = "\uD83D\uDC64"; document.body.appendChild(b);
+  b.onclick = function () { F.forEach(function (f) { els[f[0]].value = PZ[f[0]]; }); ov.style.display = "block"; };
+  sv.onclick = function () { F.forEach(function (f) { PZ[f[0]] = els[f[0]].value.trim().slice(0, 400); }); pzSave(); ov.style.display = "none"; };
+  ov.addEventListener("click", function (e) { if (e.target === ov) ov.style.display = "none"; });
+})();
